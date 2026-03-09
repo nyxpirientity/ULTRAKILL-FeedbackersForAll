@@ -1,0 +1,79 @@
+﻿
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<GenerateDocumentationFile>false</GenerateDocumentationFile>
+	<Platforms>AnyCPU;x64</Platforms>
+    <UserSecretsId>d56acd9c-57d4-400f-8c2e-b35b8ee6f6fc</UserSecretsId>
+  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+	  <DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+	  <DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="BepInEx">
+			<HintPath>$(ULTRAKILL_DIR)\BepInEx\core\BepInEx.dll</HintPath>
+		</Reference>
+		<Reference Include="Nyxpiri.ULTRAKILL.NyxLib">
+			<HintPath>$(ULTRAKILL_DIR)\BepInEx\plugins\NyxLib.dll</HintPath>
+		</Reference>
+		<Reference Include="Harmony">
+			<HintPath>$(ULTRAKILL_DIR)\BepInEx\core\0Harmony.dll</HintPath>
+		</Reference>
+		<Reference Include="Assembly-CSharp">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\Assembly-CSharp.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.CoreModule">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.PhysicsModule">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+		</Reference>
+		<Reference Include="Unity.TextMeshPro">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+		</Reference>
+		<Reference Include="Unity.TextCoreModule">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\Unity.TextCoreModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.UI">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.UI.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.UIModule">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.AudioModule">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+		</Reference>
+		<Reference Include="Unity.InputSystem">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\Unity.InputSystem.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.InputLegacyModule">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.ImageConversionModule.dll">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+		</Reference>
+		<Reference Include="Unity.Addressables">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\Unity.Addressables.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+	<Target Name="PostBuildUnix" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Unix'">
+	  <Exec Command="cp &quot;$(OutDir)/FeedbackersForEveryone.dll&quot; &quot;$ULTRAKILL_DIR/BepInEx/plugins&quot;" />
+	</Target>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
+	  <Exec Command="copy &quot;$(OutDir)\FeedbackersForEveryone.dll&quot; &quot;%25ULTRAKILL_DIR%25\BepInEx\plugins&quot;" />
+	</Target>
+</Project>

@@ -1,0 +1,143 @@
+using System;
+using System.Reflection;
+using Nyxpiri.ULTRAKILL.NyxLib;
+using ULTRAKILL.Portal;
+using UnityEngine;
+
+namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
+{
+    public static class GrenadePatches
+    {
+        internal static void Initialize()
+        {
+            GrenadeEvents.PreGrenadeStart += PreGrenadeStart;
+            GrenadeEvents.PreGrenadeBeam += PreGrenadeBeam;
+            GrenadeEvents.PostGrenadeBeam += PostGrenadeBeam;
+            GrenadeEvents.PreGrenadeCollision += PreGrenadeCollision;
+
+        }
+
+        private static FieldInfo grenadeBeamFi = typeof(Grenade).GetField("grenadeBeam", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        private static void PreGrenadeStart(EventMethodCanceler canceler, Grenade grenade)
+        {
+            grenade.GetOrAddComponent<ProjectileBoostTracker>();
+        }
+
+        private static void PreGrenadeBeam(EventMethodCanceler canceler, Grenade grenade, Vector3 targetPoint, GameObject newSourceWeapon)
+        {
+            var grenadeBeamPrefab = (RevolverBeam)(grenadeBeamFi.GetValue(grenade));
+            var boostTracker = grenadeBeamPrefab.gameObject.AddComponent<ProjectileBoostTracker>();
+            var oldBoostTracker = grenade.GetComponent<ProjectileBoostTracker>();
+            Assert.IsNotNull(boostTracker);
+            Assert.IsNotNull(grenade);
+            Assert.IsNotNull(grenade.GetComponent<ProjectileBoostTracker>());
+
+            if (oldBoostTracker.NumEnemyBoosts > 0)
+            {
+                if (grenade.rocket)
+                {
+                    StyleHUD.Instance.AddPoints(10, "<color=#ae57ff>MODERN <color=#ff0000>T<color=#ffaa00>E<color=#0dff00>C<color=#ffd500>H<color=#7bff00>N<color=#00ff59>O<color=#00c3ff>L<color=#0080ff>O<color=#7300ff>G<color=#ff00ee>Y");
+                }
+                else
+                {
+                    StyleHUD.Instance.AddPoints(10, "<color=#00fff7>CONVERSION</color>");
+                }
+            }
+
+            boostTracker.CopyFrom(oldBoostTracker);
+            boostTracker.IncrementPlayerBoosts();
+        }
+
+        private static void PostGrenadeBeam(EventMethodCancelInfo cancelInfo, Grenade grenade, Vector3 targetPoint, GameObject newSourceWeapon)
+        {
+            var grenadeBeamPrefab = (RevolverBeam)grenadeBeamFi.GetValue(grenade);
+            UnityEngine.Object.Destroy(grenadeBeamPrefab.gameObject.GetComponent<ProjectileBoostTracker>());
+        }
+
+        private static void PreGrenadeCollision(EventMethodCanceler canceler, Grenade grenade, Collider other, Vector3 velocity)
+        {
+            if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
+            var boostTracker = grenade.GetComponent<ProjectileBoostTracker>();
+
+            var parryability = boostTracker.NotifyContact();
+
+            if (other.TryGetComponent<PortalAwarePlayerColliderClone>(out var _) || grenade.IsExploded() || (!grenade.enemy && other.CompareTag("Player")) || other.gameObject.layer == 14 || other.gameObject.layer == 20)
+            {
+                return;
+            }
+            
+            if ((other.gameObject.layer == 11 || other.gameObject.layer == 10) && (other.attachedRigidbody ? other.attachedRigidbody.TryGetComponent<EnemyIdentifierIdentifier>(out var eidid) : other.TryGetComponent<EnemyIdentifierIdentifier>(out eidid)) && (bool)eidid.eid)
+            {
+                var enemy = eidid.eid.GetComponent<EnemyComponents>();
+
+                Assert.IsNotNull(enemy);
+
+                if (enemy.Eid.Dead)
+                {
+                    return;
+                }
+
+                if (grenade.ignoreEnemyType.Count > 0 && grenade.ignoreEnemyType.Contains(enemy.Eid.enemyType))
+                {
+                    return;
+                }
+
+                var feedbacker = enemy.GetFeedbacker();
+
+                if (!feedbacker.Enabled)
+                {
+                    return;
+                }
+
+                if (!feedbacker.ReadyToParry)
+                {
+                    return;
+                }
+
+                if ((parryability < 0.5f))
+                {
+                    return;
+                }
+                
+                var parryForce = feedbacker.SolveParryForce(grenade.transform.position, grenade.rb.velocity);
+                
+                if (grenade.rocket)
+                {
+                    grenade.rb.velocity = parryForce * grenade.rb.velocity.magnitude;
+                    grenade.rb.rotation = Quaternion.LookRotation(parryForce);
+                }
+                else
+                {
+                    var vel = (parryForce * grenade.rb.velocity.magnitude * 5.0f);
+
+                    if (vel.magnitude > 80.0f)
+                    {
+                        vel = vel.normalized * 80.0f;
+                    }
+
+                    grenade.rb.velocity = vel;
+                }
+
+                grenade.enemy = true;
+                boostTracker.IncrementEnemyBoost();
+                feedbacker.ParryEffect();
+
+                boostTracker.IgnoreColliders = enemy.Colliders;
+                boostTracker.SafeEid = enemy.Eid;
+
+                var v1 = NewMovement.Instance;
+                Physics.IgnoreCollision(grenade.GetComponent<Collider>(), v1.playerCollider, false);
+
+                canceler.CancelMethod();
+                return;
+            }
+
+            return;
+        }
+    }
+}

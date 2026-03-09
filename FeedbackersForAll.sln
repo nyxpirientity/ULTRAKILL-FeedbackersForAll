@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FeedbackersForEveryone", "FeedbackersForEveryone", "{55AB979B-FED3-3632-C6CF-FDF97246EFAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeedbackersForEveryone", "Source\FeedbackersForEveryone.csproj", "{8EF6A4ED-B3F2-7A23-DEED-78D2EC6DA916}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8EF6A4ED-B3F2-7A23-DEED-78D2EC6DA916}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EF6A4ED-B3F2-7A23-DEED-78D2EC6DA916}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EF6A4ED-B3F2-7A23-DEED-78D2EC6DA916}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EF6A4ED-B3F2-7A23-DEED-78D2EC6DA916}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8EF6A4ED-B3F2-7A23-DEED-78D2EC6DA916} = {55AB979B-FED3-3632-C6CF-FDF97246EFAA}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {62B56874-01EE-40B5-87EC-362E0ECFAB3F}
+	EndGlobalSection
+EndGlobal

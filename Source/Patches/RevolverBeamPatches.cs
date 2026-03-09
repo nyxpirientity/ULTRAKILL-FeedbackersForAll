@@ -1,0 +1,189 @@
+using System;
+using System.Linq;
+using System.Reflection;
+using Nyxpiri.ULTRAKILL.NyxLib;
+using UnityEngine;
+
+namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
+{
+    public static class RevolverBeamPatches
+    {
+        internal static void Initialize()
+        {
+            RevolverBeamEvents.PreRevolverBeamStart += PreRevolverBeamStart;
+            RevolverBeamEvents.PreRevolverBeamHitSomething += PreRevolverBeamHitSomething;
+            RevolverBeamEvents.PreRevolverBeamPiercingShotCheck += PreRevolverBeamPiercingShotCheck;
+        }
+
+        private static FieldInfo _enemiesPiercedFi = typeof(RevolverBeam).GetField("enemiesPierced", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private static void PreRevolverBeamStart(EventMethodCanceler canceler, RevolverBeam revolverBeam)
+        {
+            revolverBeam.GetOrAddComponent<ProjectileBoostTracker>();
+        }
+
+        private static void PreRevolverBeamHitSomething(EventMethodCanceler canceler, RevolverBeam revolverBeam, PhysicsCastResult hit)
+        {
+            if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
+            if (revolverBeam.beamType == BeamType.Enemy || revolverBeam.beamType == BeamType.MaliciousFace)
+            {
+                return;
+            }
+
+            var boostTracker = revolverBeam.GetComponent<ProjectileBoostTracker>();
+
+            var parryability = boostTracker.NotifyContact();
+
+            if ((hit.collider.attachedRigidbody ? hit.collider.attachedRigidbody.TryGetComponent<EnemyIdentifierIdentifier>(out var eidid) : hit.collider.TryGetComponent<EnemyIdentifierIdentifier>(out eidid)) && (bool)eidid.eid)
+            {
+                var enemy = eidid.eid.GetComponent<EnemyComponents>();
+
+                Assert.IsNotNull(enemy);
+
+                if (enemy.Eid.Dead)
+                {
+                    return;
+                }
+
+                if (parryability < 0.5f)
+                {
+                    return;
+                }
+
+                var feedbacker = enemy.GetFeedbacker();
+
+                if (!feedbacker.Enabled)
+                {
+                    return;
+                }
+
+                if (!feedbacker.ReadyToParry)
+                {
+                    return;
+                }
+
+                var parryForce = feedbacker.SolveParryForce(hit.point, Vector3.one);
+                
+                feedbacker.ParryEffect();
+
+                var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
+                var counterBeam = counterBeamGo.GetComponent<Projectile>();
+                var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
+                counterBeamBoostTracker.CopyFrom(boostTracker);
+                counterBeamBoostTracker.IncrementEnemyBoost();
+                counterBeamGo.transform.position = hit.point;
+                counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
+                counterBeamGo.SetActive(true);
+                
+                var colliders = enemy.Colliders;
+                counterBeamBoostTracker.IgnoreColliders = colliders;
+
+                //counterBeam.safeEnemyType = enemy.Eid.enemyType;
+                counterBeam.playerBullet = true;
+                counterBeam.damage = revolverBeam.damage * 25.0f;
+                counterBeam.enemyDamageMultiplier = 1.0f / 25.0f;
+                revolverBeam.fake = true;
+                canceler.CancelMethod();
+                return;
+            }
+
+            return;
+        }
+
+        private static void PreRevolverBeamPiercingShotCheck(EventMethodCanceler canceler, RevolverBeam revolverBeam)
+        {
+            if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
+            if (revolverBeam.beamType == BeamType.Enemy || revolverBeam.beamType == BeamType.MaliciousFace)
+            {
+                return;
+            }
+
+            var boostTracker = revolverBeam.GetComponent<ProjectileBoostTracker>();
+
+            var parryability = boostTracker.NotifyContact();
+
+            int enemiesPierced = (int)_enemiesPiercedFi.GetValue(revolverBeam);
+            
+            if (enemiesPierced != 0)
+            {
+                return;
+            }
+
+            if (revolverBeam.hitList.Count <= enemiesPierced)
+            {
+                return;
+            }
+
+            var hit = revolverBeam.hitList[enemiesPierced];
+            
+            if (hit.collider == null)
+            {
+                return;
+            }
+            
+            if ((hit.collider.attachedRigidbody ? hit.collider.attachedRigidbody.TryGetComponent<EnemyIdentifierIdentifier>(out var eidid) : hit.collider.TryGetComponent<EnemyIdentifierIdentifier>(out eidid)) && (bool)eidid.eid)
+            {
+                var enemy = eidid.eid.GetComponent<EnemyComponents>();
+
+                Assert.IsNotNull(enemy);
+
+                if (enemy.Eid.Dead)
+                {
+                    return;
+                }
+
+                if (parryability < 0.5f)
+                {
+                    return;
+                }
+
+                var feedbacker = enemy.GetFeedbacker();
+
+                if (!feedbacker.Enabled)
+                {
+                    return;
+                }
+
+                if (!feedbacker.ReadyToParry)
+                {
+                    return;
+                }
+
+                var parryForce = feedbacker.SolveParryForce(hit.point, Vector3.one);
+                
+                feedbacker.ParryEffect();
+
+                var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
+                var counterBeam = counterBeamGo.GetComponent<Projectile>();
+                var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
+                counterBeamBoostTracker.CopyFrom(boostTracker);
+                counterBeamBoostTracker.IncrementEnemyBoost();
+                counterBeamGo.transform.position = hit.point;
+                counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
+                counterBeamGo.SetActive(true);
+                
+                var colliders = enemy.Colliders;
+                counterBeamBoostTracker.IgnoreColliders = colliders;
+                counterBeamBoostTracker.SafeEid = enemy.Eid;
+
+                //counterBeam.safeEnemyType = enemy.Eid.enemyType;
+                counterBeam.playerBullet = true;
+                counterBeam.damage = revolverBeam.damage * 25.0f;
+                counterBeam.enemyDamageMultiplier = 1.0f / 25.0f;
+                revolverBeam.fake = true;
+                _enemiesPiercedFi.SetValue(revolverBeam, int.MaxValue);
+                return;
+            }
+
+            return;
+        }
+    }
+}
