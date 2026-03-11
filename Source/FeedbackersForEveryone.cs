@@ -18,6 +18,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         protected void Awake()
         {
             Log.Initialize(Logger);
+            Options.Initialize();
+            Options.Config = Config;
             EnemyFeedbacker.Initialize();
             ParryabilityTracker.Initialize();
             CannonballPatches.Initialize();
@@ -45,6 +47,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     
                 }
             ), "FAIRNESS AND EQUALITY");
+        }
+
+        protected void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus)
+            {
+                Config.Reload();
+            }
         }
 
         protected void Start()
