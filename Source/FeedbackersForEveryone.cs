@@ -2,6 +2,7 @@
 using BepInEx;
 using HarmonyLib;
 using System.Reflection;
+using System;
 
 namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 {
@@ -27,6 +28,23 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             PunchPatches.Initialize();
             RevolverBeamPatches.Initialize();
             Harmony.CreateAndPatchAll(Assembly.GetCallingAssembly());
+            NyxLib.Cheats.ReadyForCheatRegistration += RegisterCheats;
+        }
+
+        private void RegisterCheats(CheatsManager cheatsManager)
+        {            
+            cheatsManager.RegisterCheat(new ToggleCheat(
+                "Feedbackers for Everyone!", 
+                Cheats.FeedbackersForEveryone,
+                onDisable: (cheat) =>
+                {
+                    
+                },
+                onEnable: (cheat, manager) =>
+                {
+                    
+                }
+            ), "FAIRNESS AND EQUALITY");
         }
 
         protected void Start()
