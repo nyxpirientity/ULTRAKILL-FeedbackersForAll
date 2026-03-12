@@ -3,6 +3,7 @@ using BepInEx;
 using HarmonyLib;
 using System.Reflection;
 using System;
+using System.IO;
 
 namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 {
@@ -18,8 +19,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         protected void Awake()
         {
             Log.Initialize(Logger);
-            Options.Initialize();
             Options.Config = Config;
+            Options.Initialize();
             EnemyFeedbacker.Initialize();
             ParryabilityTracker.Initialize();
             CannonballPatches.Initialize();
@@ -29,8 +30,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             ProjectilePatches.Initialize();
             PunchPatches.Initialize();
             RevolverBeamPatches.Initialize();
-            Harmony.CreateAndPatchAll(Assembly.GetCallingAssembly());
+            Harmony.CreateAndPatchAll(GetType().Assembly);
             NyxLib.Cheats.ReadyForCheatRegistration += RegisterCheats;
+
+            if (!File.Exists(Config.ConfigFilePath))
+            {
+                Config.Save();
+            }
         }
 
         private void RegisterCheats(CheatsManager cheatsManager)

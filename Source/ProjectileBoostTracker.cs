@@ -49,6 +49,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     }
                 }
                 
+                if (value == null)
+                {
+                    _ignoreColliders = new Collider[0];
+                    return;
+                }
+                
                 _ignoreColliders = value.ToArray();
 
                 foreach (var otherCol in _ignoreColliders)
@@ -457,6 +463,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     interruptionExplosion = _cballInterruptionExplosionFi.GetValue(_cannonball) as GameObject;
                     _explosion = interruptionExplosion.GetComponent<ExplosionAdditions>();
                 }
+            }
+
+            if (_explosion != null)
+            {
+                _explosion.ForceElectric = Electric;
             }
         }
 

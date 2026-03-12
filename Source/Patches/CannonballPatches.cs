@@ -19,11 +19,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         private static void PreCannonballLaunch(EventMethodCanceler canceler, Cannonball cannonball)
         {
+            Log.Debug($"PreCannonballLaunch called on {cannonball}");
             cannonball.GetComponent<ProjectileBoostTracker>().IncrementPlayerBoosts();
         }
 
         private static void PreCannonballCollide(EventMethodCanceler canceler, Cannonball cannonball, Collider other)
         {
+            Log.Debug($"PreCannonballCollide called on {cannonball}");
             Collider col = cannonball.GetComponent<Collider>();
             var boostTracker = cannonball.GetComponent<ProjectileBoostTracker>();
 
@@ -119,6 +121,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         private static void PreCannonballStart(EventMethodCanceler canceler, Cannonball cannonball)
         {
+            Log.Debug($"PreCannonballStart called on {cannonball}");
             cannonball.GetOrAddComponent<ProjectileBoostTracker>();
         }
     }

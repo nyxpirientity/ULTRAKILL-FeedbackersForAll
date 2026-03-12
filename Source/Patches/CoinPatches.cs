@@ -17,6 +17,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         private static void PostCoinAwake(EventMethodCancelInfo cancelInfo, Coin coin)
         {
+            Log.Debug($"PostCoinAwake called on {coin}");
             coin.GetOrAddComponent<ProjectileBoostTracker>();
         }
 
@@ -27,6 +28,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             static void DeliverDamageReplacement(EnemyIdentifier eid, GameObject target, Vector3 force, Vector3 hitPoint, float multiplier, bool tryForExplode, float critMultiplier = 0f, GameObject sourceWeapon = null, bool ignoreTotalDamageTakenMultiplier = false, bool fromExplosion = false)
             {
+                Log.Debug($"DeliverDamageReplacement called on {_currentCoin}");
+
                 Action deliverThatDamage = () =>
                 {
                     eid.DeliverDamage(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);  
@@ -136,6 +139,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             static void DeliverDamageReplacement(EnemyIdentifier eid, GameObject target, Vector3 force, Vector3 hitPoint, float multiplier, bool tryForExplode, float critMultiplier = 0f, GameObject sourceWeapon = null, bool ignoreTotalDamageTakenMultiplier = false, bool fromExplosion = false)
             {
+                Log.Debug($"Punchflection.DeliverDamageReplacement called on {_currentCoin}");
+
                 Action deliverThatDamage = () =>
                 {
                     eid.DeliverDamage(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);  
