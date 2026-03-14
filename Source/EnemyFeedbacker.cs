@@ -39,7 +39,6 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             _eadd.PreHurt += PreHurt;
             _eadd.PostHurt += PostHurt;
-            Harmony.CreateAndPatchAll(Assembly.GetCallingAssembly());
         }
 
         private void PreHurt(GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
