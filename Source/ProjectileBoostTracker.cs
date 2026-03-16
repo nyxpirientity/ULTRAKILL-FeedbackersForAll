@@ -79,6 +79,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
 
             NumPlayerBoosts += 1;
+            
+            if (NumEnemyBoosts == 0)
+            {
+                return;
+            }
 
             if (_proj != null)
             {
@@ -96,8 +101,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             SafeEid = null;
             _safeEnemyTypeCountDown = 0.0f;
             IgnoreColliders = new Collider[]{};
-            BoostOomph(true);
             
+            if (NumPlayerBoosts > 1)
+            {
+                BoostOomph(true);
+            }
+
             Log.Debug($"IncrementPlayerBoosts called for ProjectileBoostTracker {this}");
         }
 
@@ -106,6 +115,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             if (!LastBoostedByPlayer && NumEnemyBoosts > 0)
             {
                 return;
+            }
+
+            if (NumEnemyBoosts == 0)
+            {
+                for (int i = 1; i < NumPlayerBoosts; i++)
+                {
+                    BoostOomph(true);
+                }
             }
 
             NumEnemyBoosts += 1;

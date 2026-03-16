@@ -76,6 +76,17 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     eid = eidid.eid;
                 }
 
+                var enemy = eid.GetComponent<EnemyComponents>();
+
+                Assert.IsNotNull(enemy);
+
+                var feedbacker = enemy.GetFeedbacker();
+
+                if (!feedbacker.Enabled)
+                {
+                    return;
+                }
+
                 if (boostTracker.SafeEid == eid)
                 {
                     canceler.CancelMethod();
@@ -93,12 +104,6 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 if (eidid != null && eidid.eid != null)
                 {
                     eid = eidid.eid;
-                }
-
-                if (boostTracker.SafeEid == eid)
-                {
-                    canceler.CancelMethod();
-                    return;
                 }
 
                 if ((eid == null) || (projectile.alreadyHitEnemies.Count != 0 && projectile.alreadyHitEnemies.Contains(eid)) || ((eid.enemyType == projectile.safeEnemyType || EnemyIdentifier.CheckHurtException(projectile.safeEnemyType, eid.enemyType, projectile.targetHandle)) && (!projectile.friendly || eid.immuneToFriendlyFire) && !projectile.playerBullet && !projectile.parried))
@@ -123,6 +128,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 if (!feedbacker.Enabled)
                 {
                     failedParry();
+                    return;
+                }
+                
+                if (boostTracker.SafeEid == eid)
+                {
+                    canceler.CancelMethod();
                     return;
                 }
 
