@@ -67,6 +67,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             var boostTracker = nail.GetComponent<ProjectileBoostTracker>();
 
+            if (boostTracker == null)
+            {
+                return;
+            }
+
             if (boostTracker.SafeEid == enemy.Eid)
             {
                 canceler.CancelMethod();

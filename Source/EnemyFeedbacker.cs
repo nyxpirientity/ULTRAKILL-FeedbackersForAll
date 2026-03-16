@@ -80,8 +80,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
             
             var sound = UnityEngine.Object.Instantiate((GameObject)timeControllerParryLightFi.GetValue(TimeScale.Controller), fromPoint, Quaternion.identity, transform);
+            sound.GetComponentInChildren<AudioSource>().volume *= Options.EnemyParrySoundScalar.Value;
             sound.GetComponent<RemoveOnTime>().time = Options.EnemyParryDelay.Value;
-            var parryFlash = UnityEngine.Object.Instantiate(Assets.ParryFlashPrefab.ToAsset(), fromPoint, Quaternion.identity, transform);
+            var parryFlash = UnityEngine.Object.Instantiate(Assets.ParryFlashPrefab.ToAsset(), fromPoint, Quaternion.LookRotation((NewMovement.Instance.HeadPosition - fromPoint).normalized), Options.ParryFollowsEnemy.Value ? transform : null);
             parryFlash.transform.localScale *= 2.0f;
             Stamina -= ParryCost;
 
@@ -113,7 +114,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 _queuedParries.RemoveAt(i);
                 i -= 1;
-                queuedParry.ParryAction?.Invoke(transform.position - queuedParry.PosAtTheTime);
+                queuedParry.ParryAction?.Invoke(Options.ParryFollowsEnemy.Value ? (transform.position - queuedParry.PosAtTheTime) : Vector3.zero);
             }
         }
 
