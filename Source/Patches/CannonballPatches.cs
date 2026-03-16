@@ -101,13 +101,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 boostTracker.IncrementEnemyBoost();
                 feedbacker.ParryEffect(cannonball.transform.position);
-                cannonball.Rigidbody.velocity = Vector3.zero;
                 cannonball.gameObject.SetActive(false);
                                 
                 boostTracker.IgnoreColliders = enemy.Colliders;
                 boostTracker.SafeEid = enemy.Eid;
                 cannonball.hitEnemies.Add(enemy.Eid);
                 float cannonballSpeed = cannonball.Rigidbody.velocity.magnitude;
+                
                 feedbacker.QueueParry((offset) =>
                 {
                     cannonball.gameObject.SetActive(true);
