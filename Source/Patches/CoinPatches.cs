@@ -77,9 +77,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     return;
                 }
 
-                var parryForce = feedbacker.SolveParryForce(hitPoint, Vector3.zero);
                 
-                feedbacker.ParryEffect();
+                feedbacker.ParryEffect(hitPoint);
                 var coinMeshF = coin.GetComponentInChildren<MeshFilter>();
                 var coinMeshR = coin.GetComponentInChildren<MeshRenderer>();
                 
@@ -90,18 +89,25 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 counterBeam.GetComponentInChildren<MeshRenderer>().material = coinMeshR.material;
                 counterBeamBoostTracker.CopyFrom(boostTracker);
                 counterBeamBoostTracker.IncrementEnemyBoost();
-                counterBeamGo.transform.position = hitPoint;
-                counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
-                counterBeamGo.SetActive(true);
-                
-                var colliders = enemy.Colliders;
-                counterBeamBoostTracker.IgnoreColliders = colliders;
-                counterBeamBoostTracker.SafeEid = eid;
+                float coinPower = coin.power;
 
-                //counterBeam.safeEnemyType = enemy.Eid.enemyType;
-                counterBeam.playerBullet = true;
-                counterBeam.damage = coin.power * 5.0f;
-                counterBeam.enemyDamageMultiplier = 1.0f / 5.0f;
+                feedbacker.QueueParry((offset) =>
+                {
+                    var parryForce = feedbacker.SolveParryForce(hitPoint + offset, (counterBeam.transform.rotation * Vector3.forward) * counterBeam.speed);
+                    counterBeamGo.transform.position = hitPoint + offset;
+                    counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
+                    counterBeamGo.SetActive(true);
+                    
+                    var colliders = enemy.Colliders;
+                    counterBeamBoostTracker.IgnoreColliders = colliders;
+                    counterBeamBoostTracker.SafeEid = eid;
+
+                    counterBeamBoostTracker.SetTempSafeEnemyType(enemy.Eid.enemyType);
+                    counterBeam.playerBullet = true;
+                    counterBeam.damage = coinPower * 5.0f;
+                    counterBeam.enemyDamageMultiplier = 1.0f / 5.0f;
+                });
+
                 UnityEngine.Object.Destroy(coin.gameObject);
                 return;
             }
@@ -190,9 +196,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     return;
                 }
 
-                var parryForce = feedbacker.SolveParryForce(hitPoint, Vector3.zero);
-                
-                feedbacker.ParryEffect();
+                feedbacker.ParryEffect(hitPoint);
+                float coinPower = coin.power;
                 var coinMeshF = coin.GetComponentInChildren<MeshFilter>();
                 var coinMeshR = coin.GetComponentInChildren<MeshRenderer>();
                 
@@ -203,18 +208,26 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 counterBeam.GetComponentInChildren<MeshRenderer>().material = coinMeshR.material;
                 counterBeamBoostTracker.CopyFrom(boostTracker);
                 counterBeamBoostTracker.IncrementEnemyBoost();
-                counterBeamGo.transform.position = hitPoint;
-                counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
-                counterBeamGo.SetActive(true);
-                
-                var colliders = enemy.Colliders;
-                counterBeamBoostTracker.IgnoreColliders = colliders;
-                counterBeamBoostTracker.SafeEid = eid;
 
-                //counterBeam.safeEnemyType = enemy.Eid.enemyType;
-                counterBeam.playerBullet = true;
-                counterBeam.damage = coin.power * 5.0f;
-                counterBeam.enemyDamageMultiplier = 1.0f / 5.0f;
+                feedbacker.QueueParry((offset) =>
+                {
+                    var parryForce = feedbacker.SolveParryForce(hitPoint + offset, (counterBeam.transform.rotation * Vector3.forward) * counterBeam.speed);
+                    counterBeamGo.transform.position = hitPoint + offset;
+                    counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
+
+                    counterBeamGo.SetActive(true);
+                    
+                    var colliders = enemy.Colliders;
+                    counterBeamBoostTracker.IgnoreColliders = colliders;
+                    counterBeamBoostTracker.SafeEid = eid;
+
+                    //counterBeam.safeEnemyType = enemy.Eid.enemyType;
+                    counterBeam.playerBullet = true;
+                    counterBeam.damage = coinPower * 5.0f;
+                    counterBeamBoostTracker.SetTempSafeEnemyType(enemy.Eid.enemyType);
+                    counterBeam.enemyDamageMultiplier = 1.0f / 5.0f;
+                });
+
                 coin.GetDeleted();
                 return;
             }

@@ -72,7 +72,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         private class ParryabilityInfo
         {
-            public static int QueueCap { get => 6; }
+            public static int QueueCap { get => 10; }
 
             public double NotifyContact()
             {
@@ -152,7 +152,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 internal void EnqueueNew()
                 {
-                    if (_LastEnqueueTimestamp.TimeSince < 0.5f)
+                    if (_LastEnqueueTimestamp.TimeSince < 0.25f)
                     {
                         return;
                     }
@@ -168,6 +168,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     _decayTimestamp.UpdateToNow();
                     UpdateDecayTime();
                     UpdateBestDiffDist();
+                    _LastEnqueueTimestamp.UpdateToNow();
                 }
 
                 private void UpdateBestDiffDist()

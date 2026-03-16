@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using Nyxpiri.ULTRAKILL.NyxLib;
@@ -31,6 +33,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         public float Stamina { get; private set; } = 0;
         public static int MonoRegistrarIndex { get; private set; }
 
+        public void QueueParry(Action<Vector3> parryAction)
+        {
+            var initTime = new FixedTimeStamp();
+            initTime.UpdateToNow();
+            _queuedParries.Add(new QueuedParry { ParryAction = parryAction, InitTime = initTime, PosAtTheTime = transform.position });
+        }
+
         protected void Awake()
         {
             _eadd = GetComponent<EnemyComponents>();
@@ -59,7 +68,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         }
 
-        public void ParryEffect()
+        static FieldInfo timeControllerParryLightFi = typeof(TimeController).GetField("parryLight", BindingFlags.Instance | BindingFlags.NonPublic); 
+
+        public void ParryEffect(Vector3 fromPoint)
         {
             Assert.IsTrue(ReadyToParry, "EnemyFeedbacker.ParryEffect called when not ReadyToParry?");
 
@@ -67,13 +78,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 TimeScale.Controller.ParryFlash();
             }
-            else
-            {
-                TimeScale.ModDisableHitstop = true;
-                TimeScale.Controller.ParryFlash();
-                TimeScale.ModDisableHitstop = false;
-            }
-
+            
+            var sound = UnityEngine.Object.Instantiate((GameObject)timeControllerParryLightFi.GetValue(TimeScale.Controller), fromPoint, Quaternion.identity, transform);
+            sound.GetComponent<RemoveOnTime>().time = Options.EnemyParryDelay.Value;
+            var parryFlash = UnityEngine.Object.Instantiate(Assets.ParryFlashPrefab.ToAsset(), fromPoint, Quaternion.identity, transform);
+            parryFlash.transform.localScale *= 2.0f;
             Stamina -= ParryCost;
 
             LastParryTimestamp.UpdateToNow();
@@ -90,7 +99,22 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         protected void FixedUpdate()
         {
-            Stamina = Mathf.MoveTowards(Stamina, 1.0f, (Time.fixedDeltaTime / 1.6f) * 0.25f);
+            Stamina = Mathf.MoveTowards(Stamina, 1.0f, (Time.fixedDeltaTime / 1.6f) * 0.4f);
+
+            for (int i = 0; i < _queuedParries.Count; i++)
+            {
+                QueuedParry queuedParry = _queuedParries[i];
+                var waitTime = Options.EnemyParryDelay.Value;
+                
+                if (queuedParry.InitTime.TimeSince < waitTime)
+                {
+                    continue;
+                }
+
+                _queuedParries.RemoveAt(i);
+                i -= 1;
+                queuedParry.ParryAction?.Invoke(transform.position - queuedParry.PosAtTheTime);
+            }
         }
 
         protected void OnDestroy()
@@ -101,7 +125,16 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         {
             var v1 = NewMovement.Instance;
 
-            var direction = ((v1.HeadPosition) - projectilePosition).normalized;
+            var dist = Vector3.Distance(projectilePosition, v1.HeadPosition);
+            Vector3 direction; 
+            if (projectileVelocity.magnitude > 0.0f)
+            {
+                direction = (((v1.HeadPosition + (v1.travellerVelocity * ((Mathf.Pow(dist, 0.8f) / projectileVelocity.magnitude))))) - projectilePosition).normalized;
+            }
+            else
+            {
+                direction = ((v1.HeadPosition) - projectilePosition).normalized;
+            }
 
             return direction;
         }
@@ -110,5 +143,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         {
             MonoRegistrarIndex = EnemyComponents.MonoRegistrar.Register<EnemyFeedbacker>();
         }
+
+        private struct QueuedParry
+        {
+            public Action<Vector3> ParryAction;
+            public FixedTimeStamp InitTime;
+            public Vector3 PosAtTheTime;
+        }
+
+        private List<QueuedParry> _queuedParries = new List<QueuedParry>(2);
     }
 }

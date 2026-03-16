@@ -92,7 +92,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             nail.rb.transform.rotation = Quaternion.LookRotation(parryForce);
 
             boostTracker.IncrementEnemyBoost();
-            feedbacker.ParryEffect();
+            feedbacker.ParryEffect(nail.transform.position);
 
             boostTracker.IgnoreColliders = enemy.Colliders;
             boostTracker.SafeEid = enemy.Eid;

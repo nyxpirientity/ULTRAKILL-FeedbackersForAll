@@ -66,26 +66,32 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     return;
                 }
 
-                var parryForce = feedbacker.SolveParryForce(hit.point, Vector3.one);
                 
-                feedbacker.ParryEffect();
-
-                var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
-                var counterBeam = counterBeamGo.GetComponent<Projectile>();
-                var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
-                counterBeamBoostTracker.CopyFrom(boostTracker);
-                counterBeamBoostTracker.IncrementEnemyBoost();
-                counterBeamGo.transform.position = hit.point;
-                counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
-                counterBeamGo.SetActive(true);
+                feedbacker.ParryEffect(hit.point);
                 
-                var colliders = enemy.Colliders;
-                counterBeamBoostTracker.IgnoreColliders = colliders;
+                float revBeamDmg = revolverBeam.damage;
 
-                //counterBeam.safeEnemyType = enemy.Eid.enemyType;
-                counterBeam.playerBullet = true;
-                counterBeam.damage = revolverBeam.damage * 25.0f;
-                counterBeam.enemyDamageMultiplier = 1.0f / 25.0f;
+                feedbacker.QueueParry((offset) => 
+                {
+                    var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
+                    var counterBeam = counterBeamGo.GetComponent<Projectile>();
+                    var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
+                    counterBeamBoostTracker.CopyFrom(boostTracker);
+                    counterBeamBoostTracker.IncrementEnemyBoost();
+                    var parryForce = feedbacker.SolveParryForce(hit.point + offset, counterBeamGo.transform.rotation * Vector3.forward * counterBeam.speed);
+                    counterBeamGo.transform.position = hit.point + offset;
+                    counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
+                    counterBeamGo.SetActive(true);
+                    
+                    var colliders = enemy.Colliders;
+                    counterBeamBoostTracker.IgnoreColliders = colliders;
+
+                    //counterBeam.safeEnemyType = enemy.Eid.enemyType;
+                    counterBeam.playerBullet = true;
+                    counterBeam.damage = revBeamDmg* 25.0f;
+                    counterBeam.enemyDamageMultiplier = 1.0f / 25.0f;
+                });
+
                 revolverBeam.fake = true;
                 canceler.CancelMethod();
                 return;
@@ -106,16 +112,16 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return;
             }
 
-            var boostTracker = revolverBeam.GetComponent<ProjectileBoostTracker>();
-
-            var parryability = boostTracker.NotifyContact();
-
             int enemiesPierced = (int)_enemiesPiercedFi.GetValue(revolverBeam);
             
             if (enemiesPierced != 0)
             {
                 return;
             }
+
+            var boostTracker = revolverBeam.GetComponent<ProjectileBoostTracker>();
+
+            var parryability = boostTracker.NotifyContact();
 
             if (revolverBeam.hitList.Count <= enemiesPierced)
             {
@@ -156,28 +162,33 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     return;
                 }
-
-                var parryForce = feedbacker.SolveParryForce(hit.point, Vector3.one);
                 
-                feedbacker.ParryEffect();
+                feedbacker.ParryEffect(hit.point);
 
-                var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
-                var counterBeam = counterBeamGo.GetComponent<Projectile>();
-                var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
-                counterBeamBoostTracker.CopyFrom(boostTracker);
-                counterBeamBoostTracker.IncrementEnemyBoost();
-                counterBeamGo.transform.position = hit.point;
-                counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
-                counterBeamGo.SetActive(true);
-                
-                var colliders = enemy.Colliders;
-                counterBeamBoostTracker.IgnoreColliders = colliders;
-                counterBeamBoostTracker.SafeEid = enemy.Eid;
+                float revBeamDmg = revolverBeam.damage;
 
-                //counterBeam.safeEnemyType = enemy.Eid.enemyType;
-                counterBeam.playerBullet = true;
-                counterBeam.damage = revolverBeam.damage * 25.0f;
-                counterBeam.enemyDamageMultiplier = 1.0f / 25.0f;
+                feedbacker.QueueParry((offset) => 
+                {
+                    var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
+                    var counterBeam = counterBeamGo.GetComponent<Projectile>();
+                    var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
+                    counterBeamBoostTracker.CopyFrom(boostTracker);
+                    counterBeamBoostTracker.IncrementEnemyBoost();
+                    counterBeamGo.transform.position = hit.point + offset;
+                    var parryForce = feedbacker.SolveParryForce(hit.point + offset, (counterBeam.transform.rotation * Vector3.forward) * counterBeam.speed);
+                    counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
+                    counterBeamGo.SetActive(true);
+                    
+                    var colliders = enemy.Colliders;
+                    counterBeamBoostTracker.IgnoreColliders = colliders;
+                    counterBeamBoostTracker.SafeEid = enemy.Eid;
+
+                    //counterBeam.safeEnemyType = enemy.Eid.enemyType;
+                    counterBeam.playerBullet = true;
+                    counterBeam.damage = revBeamDmg * 25.0f;
+                    counterBeam.enemyDamageMultiplier = 1.0f / 25.0f;
+                });
+
                 revolverBeam.fake = true;
                 _enemiesPiercedFi.SetValue(revolverBeam, int.MaxValue);
                 return;

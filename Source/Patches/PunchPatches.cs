@@ -24,7 +24,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         proj.speed *= 0.55f; // player parry boosts speed by 2x, so this counteracts it
                     }
 
-                    if (boostTracker.NumEnemyBoosts > 0 && (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.RevolverShot || boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.PlayerProjectile))
+                    if (boostTracker.NumEnemyBoosts > 0 && (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.RevolverBeam || boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.PlayerProjectile))
                     {
                         StyleHUD.Instance.AddPoints(10, "<color=#26ff00>PARRY PONG</color>");
                     }

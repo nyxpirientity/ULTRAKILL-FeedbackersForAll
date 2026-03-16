@@ -12,7 +12,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
     {
         public enum ProjectileCategory : byte
         {
-            Null, RevolverShot, PlayerProjectile, Projectile, HomingProjectile, Rocket, Grenade, EnemyRocket, EnemyGrenade, Coin, Nail, Saw
+            Null, RevolverBeam, EnemyRevolverBeam, PlayerProjectile, Projectile, HomingProjectile, Rocket, Grenade, EnemyRocket, EnemyGrenade, Coin, Nail, Saw
         }
 
         public bool HasBeenBoosted { get => NumPlayerBoosts != 0 || NumEnemyBoosts != 0; }
@@ -63,7 +63,6 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     {
                         continue;
                     }
-
                     foreach (var col in _colliders)
                     {
                         Physics.IgnoreCollision(otherCol, col, true);
@@ -95,6 +94,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             _creationProgressTime.UpdateToNow();
             _canBeEnemyParried = true;
             SafeEid = null;
+            _safeEnemyTypeCountDown = 0.0f;
             IgnoreColliders = new Collider[]{};
             BoostOomph(true);
             
@@ -234,7 +234,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 }
                 else if (TryGetComponent(out RevolverBeam revolverBeam))
                 {
-                    ProjectileType = ProjectileCategory.RevolverShot;  
+                    if (revolverBeam.beamType == BeamType.Enemy || revolverBeam.beamType == BeamType.MaliciousFace)
+                    {
+                        ProjectileType = ProjectileCategory.EnemyRevolverBeam;
+                    }
+                    else
+                    {
+                        ProjectileType = ProjectileCategory.RevolverBeam;                          
+                    }
 
                     if (revolverBeam.attributes.Contains(HitterAttribute.Electricity))
                     {
@@ -341,7 +348,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 return 0.0;
             }
-
+            
             var contactDiffDist = ParryabilityTracker.NotifyContact(GetHashCode());
 
             double window = Math.Max(Math.Max(0.4 + (_creationStartTime.TimeSince * 0.25), 0.3 + (_creationProgressTime.TimeSince * 0.5)), 0.75);

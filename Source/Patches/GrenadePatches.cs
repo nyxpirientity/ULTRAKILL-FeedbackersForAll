@@ -104,34 +104,41 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     return;
                 }
                 
-                var parryForce = feedbacker.SolveParryForce(grenade.transform.position, grenade.rb.velocity);
+                feedbacker.ParryEffect(grenade.transform.position);
+                boostTracker.IncrementEnemyBoost();
                 
-                if (grenade.rocket)
+                grenade.gameObject.SetActive(false);
+                
+                feedbacker.QueueParry((offset) =>
                 {
-                    grenade.rb.velocity = parryForce * grenade.rb.velocity.magnitude;
-                    grenade.rb.rotation = Quaternion.LookRotation(parryForce);
-                }
-                else
-                {
-                    var vel = (parryForce * grenade.rb.velocity.magnitude * 5.0f);
-
-                    if (vel.magnitude > 80.0f)
+                    grenade.gameObject.SetActive(true);
+                    var parryForce = feedbacker.SolveParryForce(grenade.transform.position + offset, grenade.rb.velocity);
+                    if (grenade.rocket)
                     {
-                        vel = vel.normalized * 80.0f;
+                        grenade.rb.velocity = parryForce * grenade.rb.velocity.magnitude;
+                        grenade.rb.rotation = Quaternion.LookRotation(parryForce);
+                    }
+                    else
+                    {
+                        var vel = (parryForce * grenade.rb.velocity.magnitude * 5.0f);
+
+                        if (vel.magnitude > 80.0f)
+                        {
+                            vel = vel.normalized * 80.0f;
+                        }
+
+                        grenade.rb.velocity = vel;
                     }
 
-                    grenade.rb.velocity = vel;
-                }
+                    grenade.enemy = true;
 
-                grenade.enemy = true;
-                boostTracker.IncrementEnemyBoost();
-                feedbacker.ParryEffect();
+                    boostTracker.IgnoreColliders = enemy.Colliders;
+                    boostTracker.SafeEid = enemy.Eid;
+                    grenade.transform.position += offset;
 
-                boostTracker.IgnoreColliders = enemy.Colliders;
-                boostTracker.SafeEid = enemy.Eid;
-
-                var v1 = NewMovement.Instance;
-                Physics.IgnoreCollision(grenade.GetComponent<Collider>(), v1.playerCollider, false);
+                    var v1 = NewMovement.Instance;
+                    Physics.IgnoreCollision(grenade.GetComponent<Collider>(), v1.playerCollider, false);
+                });
 
                 canceler.CancelMethod();
                 return;

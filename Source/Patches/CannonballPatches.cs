@@ -99,17 +99,24 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     return;
                 }
 
-                var parryForce = enemy.GetFeedbacker().SolveParryForce(cannonball.transform.position, cannonball.Rigidbody.velocity);
-                
-                cannonball.Rigidbody.velocity = parryForce * cannonball.Rigidbody.velocity.magnitude;
-                cannonball.Rigidbody.transform.rotation = Quaternion.LookRotation(parryForce);
-
                 boostTracker.IncrementEnemyBoost();
-                feedbacker.ParryEffect();
-
+                feedbacker.ParryEffect(cannonball.transform.position);
+                cannonball.Rigidbody.velocity = Vector3.zero;
+                cannonball.gameObject.SetActive(false);
+                                
                 boostTracker.IgnoreColliders = enemy.Colliders;
                 boostTracker.SafeEid = enemy.Eid;
                 cannonball.hitEnemies.Add(enemy.Eid);
+                float cannonballSpeed = cannonball.Rigidbody.velocity.magnitude;
+                feedbacker.QueueParry((offset) =>
+                {
+                    cannonball.gameObject.SetActive(true);
+                    var parryForce = enemy.GetFeedbacker().SolveParryForce(cannonball.transform.position, cannonball.Rigidbody.velocity);
+                    
+                    cannonball.Rigidbody.transform.position += offset;
+                    cannonball.Rigidbody.velocity = parryForce * cannonballSpeed;
+                    cannonball.Rigidbody.transform.rotation = Quaternion.LookRotation(parryForce);
+                });
 
                 var v1 = NewMovement.Instance;
                 Physics.IgnoreCollision(cannonball.GetComponent<Collider>(), v1.playerCollider, false);

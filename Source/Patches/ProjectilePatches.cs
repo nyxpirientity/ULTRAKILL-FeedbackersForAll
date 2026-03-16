@@ -33,12 +33,19 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return;
             }
 
+            var boostTracker = projectile.GetComponent<ProjectileBoostTracker>();
+                
+            if (boostTracker.IgnoreColliders.Contains(other))
+            {
+                canceler.CancelMethod();
+                return;
+            }
+
             if (!projectile.friendly)
             {
                 return;
             }
 
-            var boostTracker = projectile.GetComponent<ProjectileBoostTracker>();
 
             var parryability = boostTracker.NotifyContact();
 
@@ -138,22 +145,21 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 }
                 
                 boostTracker.IncrementEnemyBoost();
-                
-                if (boostTracker.IgnoreColliders.Contains(other))
-                {
-                    canceler.CancelMethod();
-                    return;
-                }
 
-                var parryForce = feedbacker.SolveParryForce(projectile.transform.position, projectile.GetComponent<Rigidbody>().velocity);
-                projectile.homingType = HomingType.None;
-                projectile.transform.rotation = Quaternion.LookRotation(parryForce);
-                feedbacker.ParryEffect();
-                boostTracker.IgnoreColliders = enemy.Colliders;
-                boostTracker.SetTempSafeEnemyType(enemy.Eid.enemyType);
-                boostTracker.SafeEid = enemy.Eid;
-                projectile.friendly = false;
-                
+                feedbacker.ParryEffect(projectile.transform.position);
+                projectile.gameObject.SetActive(false);
+                feedbacker.QueueParry((offset) => 
+                {
+                    var parryForce = feedbacker.SolveParryForce(projectile.transform.position + offset, projectile.GetComponent<Rigidbody>().velocity);
+                    projectile.homingType = HomingType.None;
+                    projectile.transform.rotation = Quaternion.LookRotation(parryForce);
+                    boostTracker.IgnoreColliders = enemy.Colliders;
+                    boostTracker.SetTempSafeEnemyType(enemy.Eid.enemyType);
+                    boostTracker.SafeEid = enemy.Eid;
+                    projectile.friendly = false;
+                    projectile.gameObject.SetActive(true);
+                });
+
                 canceler.CancelMethod();
                 return;
             }
