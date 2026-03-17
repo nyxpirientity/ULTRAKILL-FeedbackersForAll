@@ -80,6 +80,15 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             NumPlayerBoosts += 1;
             
+            LastBoostedByPlayer = true;
+            _canBeEnemyParried = true;
+
+            _creationProgressParryabilityDist = ParryabilityTracker.NotifyCreationProgress(GetHashCode());
+            _creationProgressTime.UpdateToNow();
+
+            SafeEid = null;
+            _safeEnemyTypeCountDown = 0.0f;
+            
             if (NumEnemyBoosts == 0)
             {
                 return;
@@ -94,12 +103,6 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 }
             }
 
-            LastBoostedByPlayer = true;
-            _creationProgressParryabilityDist = ParryabilityTracker.NotifyCreationProgress(GetHashCode());
-            _creationProgressTime.UpdateToNow();
-            _canBeEnemyParried = true;
-            SafeEid = null;
-            _safeEnemyTypeCountDown = 0.0f;
             IgnoreColliders = new Collider[]{};
             
             if (NumPlayerBoosts > 1)
