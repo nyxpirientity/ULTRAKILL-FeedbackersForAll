@@ -73,7 +73,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 feedbacker.QueueParry((offset) => 
                 {
-                    var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
+                    var counterBeamGo = GameObject.Instantiate(NyxLib.Assets.EnemyRevolverBullet);
                     var counterBeam = counterBeamGo.GetComponent<Projectile>();
                     var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
                     counterBeamBoostTracker.CopyFrom(boostTracker);
@@ -169,7 +169,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 feedbacker.QueueParry((offset) => 
                 {
-                    var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
+                    var counterBeamGo = GameObject.Instantiate(NyxLib.Assets.EnemyRevolverBullet);
                     var counterBeam = counterBeamGo.GetComponent<Projectile>();
                     var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
                     counterBeamBoostTracker.CopyFrom(boostTracker);

@@ -30,6 +30,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             ProjectilePatches.Initialize();
             PunchPatches.Initialize();
             RevolverBeamPatches.Initialize();
+            Assets.Initialize();
             Harmony.CreateAndPatchAll(GetType().Assembly);
             NyxLib.Cheats.ReadyForCheatRegistration += RegisterCheats;
 

@@ -82,7 +82,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 var coinMeshF = coin.GetComponentInChildren<MeshFilter>();
                 var coinMeshR = coin.GetComponentInChildren<MeshRenderer>();
                 
-                var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
+                var counterBeamGo = GameObject.Instantiate(NyxLib.Assets.EnemyRevolverBullet);
                 var counterBeam = counterBeamGo.GetComponent<Projectile>();
                 var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
                 counterBeam.GetComponentInChildren<MeshFilter>().mesh = coinMeshF.mesh;
@@ -201,7 +201,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 var coinMeshF = coin.GetComponentInChildren<MeshFilter>();
                 var coinMeshR = coin.GetComponentInChildren<MeshRenderer>();
                 
-                var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
+                var counterBeamGo = GameObject.Instantiate(NyxLib.Assets.EnemyRevolverBullet);
                 var counterBeam = counterBeamGo.GetComponent<Projectile>();
                 var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
                 counterBeam.GetComponentInChildren<MeshFilter>().mesh = coinMeshF.mesh;

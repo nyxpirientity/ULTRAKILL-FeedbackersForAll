@@ -470,7 +470,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 }
                 else
                 {
-                    _proj.explosionEffect = GameObject.Instantiate(Assets.ExplosionPrefab, _prefabHolder.transform);
+                    _proj.explosionEffect = GameObject.Instantiate(NyxLib.Assets.ExplosionPrefab, _prefabHolder.transform);
                     _explosion = _proj.explosionEffect.GetComponent<ExplosionAdditions>();
                 }
             }
@@ -486,7 +486,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 }
                 else
                 {
-                    _cballInterruptionExplosionFi.SetValue(_cannonball, GameObject.Instantiate(Assets.ExplosionPrefab, _prefabHolder.transform));
+                    _cballInterruptionExplosionFi.SetValue(_cannonball, GameObject.Instantiate(NyxLib.Assets.ExplosionPrefab, _prefabHolder.transform));
                     interruptionExplosion = _cballInterruptionExplosionFi.GetValue(_cannonball) as GameObject;
                     _explosion = interruptionExplosion.GetComponent<ExplosionAdditions>();
                 }
