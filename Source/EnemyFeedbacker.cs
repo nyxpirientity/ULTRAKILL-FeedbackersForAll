@@ -103,11 +103,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             var sound = UnityEngine.Object.Instantiate((GameObject)timeControllerParryLightFi.GetValue(TimeScale.Controller), fromPoint, Quaternion.identity, transform);
             var audioSource = sound.GetComponentInChildren<AudioSource>();
             sound.GetComponentInChildren<AudioSource>().volume *= Options.EnemyParrySoundScalar.Value;
-            sound.GetComponent<RemoveOnTime>().time = 0.1f;
+            sound.GetComponent<RemoveOnTime>().time = 0.065f;
             audioSource.SetPitch(audioSource.GetPitch() * 1.25f);
             var parryFlash = UnityEngine.Object.Instantiate(Assets.ParryFlashPrefab.ToAsset(), fromPoint, Quaternion.LookRotation((NewMovement.Instance.HeadPosition - fromPoint).normalized), Options.ParryFollowsEnemy.Value ? transform : null);
             parryFlash.transform.localScale = new Vector3(1.0f / parryFlash.transform.lossyScale.x, 1.0f / parryFlash.transform.lossyScale.y, 1.0f / parryFlash.transform.lossyScale.z);
-            parryFlash.transform.localScale *= 2.0f;
+            parryFlash.transform.localScale *= 1.5f;
             Stamina -= ParryCost;
 
             LastParryTimestamp.UpdateToNow();
