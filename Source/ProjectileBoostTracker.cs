@@ -215,6 +215,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         protected void Start()
         {
+            TrySolveType();
+
+            _creationProgressTime.UpdateToNow();
+            MaybeEnforceOurExplosionPrefab();
+        }
+
+        private void TrySolveType()
+        {
             if (ProjectileType == ProjectileCategory.Null)
             {
                 if (TryGetComponent(out Grenade grenade))
@@ -227,7 +235,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         }
                         else
                         {
-                            ProjectileType = ProjectileCategory.EnemyGrenade;                    
+                            ProjectileType = ProjectileCategory.EnemyGrenade;
                         }
                     }
                     else
@@ -238,7 +246,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         }
                         else
                         {
-                            ProjectileType = ProjectileCategory.Grenade;                    
+                            ProjectileType = ProjectileCategory.Grenade;
                         }
                     }
                 }
@@ -254,7 +262,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     {
                         if (proj.homingType == HomingType.None)
                         {
-                            ProjectileType = ProjectileCategory.Projectile;                    
+                            ProjectileType = ProjectileCategory.Projectile;
                         }
                         else
                         {
@@ -276,14 +284,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         }
                         else
                         {
-                            ProjectileType = ProjectileCategory.RevolverBeam;                          
+                            ProjectileType = ProjectileCategory.RevolverBeam;
                         }
                     }
-                    
+
                     if (revolverBeam.attributes.Contains(HitterAttribute.Electricity))
                     {
                         Electric = true;
-                    }                  
+                    }
                 }
                 else if (TryGetComponent(out Coin coin))
                 {
@@ -298,15 +306,15 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     if (nail.chainsaw)
                     {
-                        ProjectileType = ProjectileCategory.Saw;                        
+                        ProjectileType = ProjectileCategory.Saw;
                     }
                     else if (nail.sawblade)
                     {
-                        ProjectileType = ProjectileCategory.Saw;                        
+                        ProjectileType = ProjectileCategory.Saw;
                     }
                     else
                     {
-                        ProjectileType = ProjectileCategory.Nail;                        
+                        ProjectileType = ProjectileCategory.Nail;
                     }
 
                     _nail = nail;
@@ -327,9 +335,6 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     _proj = proj;
                 }
             }
-
-            _creationProgressTime.UpdateToNow();
-            MaybeEnforceOurExplosionPrefab();
         }
 
         internal void PreNailFixedUpdate()
@@ -386,6 +391,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return 0.0;
             }
             
+            TrySolveType();
+
             var contactDiffDist = ParryabilityTracker.NotifyContact(GetHashCode());
 
             double window = Math.Max(Math.Max(0.4 + (_creationStartTime.TimeSince * 0.25), 0.3 + (_creationProgressTime.TimeSince * 0.5)), 0.75);

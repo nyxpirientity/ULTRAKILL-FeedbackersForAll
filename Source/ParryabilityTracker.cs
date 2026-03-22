@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nyxpiri.ULTRAKILL.NyxLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -186,7 +187,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     FixedTimeStamp? lastTimestamp = null;
                     BestDiffDist = 0.0f;
 
-                    foreach (var timestamp in _queue)
+                    foreach (var timestamp in _queue.Reverse())
                     {
                         if (!lastTimestamp.HasValue)
                         {
@@ -201,6 +202,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     }
 
                     double lowestDist = double.PositiveInfinity;
+                    int lowestDistI = -1;
 
                     for (int i = 1; i < _averageDiffs.Count; i++)
                     {
@@ -211,11 +213,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         if (diffDist < lowestDist)
                         {
                             lowestDist = diffDist;
+                            lowestDistI = i;
                         }
                     }
 
                     BestDiffDist = (float)lowestDist;
-                    Log.Debug($"{_debugName}:ParryabilityTracker.ParryabilityInfo.TimestampsQueue.UpdateBestDiffDist ended with a BestDiffDist of {BestDiffDist}, _queue.Count: {_queue.Count}");
+                    Log.Debug($"{_debugName}:ParryabilityTracker.ParryabilityInfo.TimestampsQueue.UpdateBestDiffDist ended with a BestDiffDist of {BestDiffDist}, and a lowestDistI of {lowestDistI}. _queue.Count: {_queue.Count}");
                 }
 
                 internal void FixedUpdate()
