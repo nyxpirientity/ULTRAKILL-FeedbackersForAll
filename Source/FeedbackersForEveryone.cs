@@ -32,6 +32,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             RevolverBeamPatches.Initialize();
             Assets.Initialize();
             Harmony.CreateAndPatchAll(GetType().Assembly);
+            NyxLib.Assets.EnableProjectilePicking();
             NyxLib.Cheats.ReadyForCheatRegistration += RegisterCheats;
 
             if (!File.Exists(Config.ConfigFilePath))
