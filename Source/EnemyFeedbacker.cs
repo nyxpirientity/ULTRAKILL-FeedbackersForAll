@@ -101,8 +101,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
             
             var sound = UnityEngine.Object.Instantiate((GameObject)timeControllerParryLightFi.GetValue(TimeScale.Controller), fromPoint, Quaternion.identity, transform);
+            var audioSource = sound.GetComponentInChildren<AudioSource>();
             sound.GetComponentInChildren<AudioSource>().volume *= Options.EnemyParrySoundScalar.Value;
-            sound.GetComponent<RemoveOnTime>().time = Options.EnemyParryDelay.Value;
+            sound.GetComponent<RemoveOnTime>().time = 0.1f;
+            audioSource.SetPitch(audioSource.GetPitch() * 1.25f);
             var parryFlash = UnityEngine.Object.Instantiate(Assets.ParryFlashPrefab.ToAsset(), fromPoint, Quaternion.LookRotation((NewMovement.Instance.HeadPosition - fromPoint).normalized), Options.ParryFollowsEnemy.Value ? transform : null);
             parryFlash.transform.localScale = new Vector3(1.0f / parryFlash.transform.lossyScale.x, 1.0f / parryFlash.transform.lossyScale.y, 1.0f / parryFlash.transform.lossyScale.z);
             parryFlash.transform.localScale *= 2.0f;
@@ -115,15 +117,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         {
             var sound = UnityEngine.Object.Instantiate((GameObject)timeControllerParryLightFi.GetValue(TimeScale.Controller), fromPoint, Quaternion.identity, transform);
             var audioSource = sound.GetComponentInChildren<AudioSource>();
+            audioSource.time = 0.05f;
             audioSource.volume *= Options.EnemyParrySoundScalar.Value * 0.5f;
             audioSource.SetPitch(audioSource.GetPitch() * 1.25f);
             sound.GetComponent<RemoveOnTime>().time = Options.EnemyParryDelay.Value;
             var parryFlash = UnityEngine.Object.Instantiate(Assets.ParryFlashPrefab.ToAsset(), fromPoint, Quaternion.LookRotation((NewMovement.Instance.HeadPosition - fromPoint).normalized), Options.ParryFollowsEnemy.Value ? transform : null);
             parryFlash.transform.localScale = new Vector3(1.0f / parryFlash.transform.lossyScale.x, 1.0f / parryFlash.transform.lossyScale.y, 1.0f / parryFlash.transform.lossyScale.z);
-            parryFlash.transform.localScale *= 2.0f;
-            Stamina -= ParryCost;
-
-            LastParryTimestamp.UpdateToNow();
+            parryFlash.transform.localScale *= 3.0f;
         }
 
 
