@@ -17,10 +17,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         public bool HasBeenBoosted { get => NumPlayerBoosts != 0 || NumEnemyBoosts != 0; }
         public bool LastBoostedByPlayer = false;
-        public uint NumPlayerBoosts { get; private set; } = 0;
-        public uint NumEnemyBoosts { get; private set; } = 0;
+        
+        public uint NumPlayerBoosts { get => _numPlayerBoosts; private set => _numPlayerBoosts = value; }
+        
+        public uint NumEnemyBoosts { get => _numEnemyBoosts; private set => _numEnemyBoosts = value; }
+        
         public uint NumBoosts { get => NumPlayerBoosts + NumEnemyBoosts; }
-        public ProjectileCategory ProjectileType { get; private set; } = ProjectileCategory.Null;
+        
+        public ProjectileCategory ProjectileType { get => _projectileType; private set => _projectileType = value; }
 
         private Cannonball _cannonball;
         public EnemyIdentifier SafeEid = null;
@@ -553,9 +557,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
         }
 
+        [SerializeField] private uint _numPlayerBoosts = 0;
+        [SerializeField] private uint _numEnemyBoosts = 0;
+        [SerializeField] private ProjectileCategory _projectileType = ProjectileCategory.Null;
+
         private static FieldInfo _cballInterruptionExplosionFi = AccessTools.Field(typeof(Cannonball), "interruptionExplosion");
-        private double _startParryabilityDist = double.PositiveInfinity;
-        private double _creationProgressParryabilityDist = double.PositiveInfinity;
+        [SerializeField] private double _startParryabilityDist = double.PositiveInfinity;
+        [SerializeField] private double _creationProgressParryabilityDist = double.PositiveInfinity;
         private FixedTimeStamp _creationStartTime = new FixedTimeStamp();
         private FixedTimeStamp _creationProgressTime = new FixedTimeStamp();
         private Collider[] _ignoreColliders = new Collider[0];
@@ -565,7 +573,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         private bool _explosiveAndExplosionUnique = false;
         private ExplosionAdditions _explosion = null;
         private GameObject _prefabHolder = null;
-        private bool _canBeEnemyParried = true;
+        [SerializeField] private bool _canBeEnemyParried = true;
         private Nail _nail;
     }
 }

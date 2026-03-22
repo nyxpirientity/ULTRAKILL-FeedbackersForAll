@@ -19,7 +19,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         private static void PreRevolverBeamStart(EventMethodCanceler canceler, RevolverBeam revolverBeam)
         {
-            revolverBeam.GetOrAddComponent<ProjectileBoostTracker>();
+            if (revolverBeam.GetComponent<ProjectileBoostTracker>() == null)
+            {
+                revolverBeam.gameObject.AddComponent<ProjectileBoostTracker>();
+            }
         }
 
         private static void PreRevolverBeamHitSomething(EventMethodCanceler canceler, RevolverBeam revolverBeam, PhysicsCastResult hit)

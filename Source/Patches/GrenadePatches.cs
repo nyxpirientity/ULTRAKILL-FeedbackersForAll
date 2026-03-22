@@ -52,7 +52,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         private static void PostGrenadeBeam(EventMethodCancelInfo cancelInfo, Grenade grenade, Vector3 targetPoint, GameObject newSourceWeapon)
         {
             var grenadeBeamPrefab = (RevolverBeam)grenadeBeamFi.GetValue(grenade);
-            UnityEngine.Object.Destroy(grenadeBeamPrefab.gameObject.GetComponent<ProjectileBoostTracker>());
+            //UnityEngine.Object.Destroy(grenadeBeamPrefab.gameObject.GetComponent<ProjectileBoostTracker>());
         }
 
         private static void PreGrenadeCollision(EventMethodCanceler canceler, Grenade grenade, Collider other, Vector3 velocity)
