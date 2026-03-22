@@ -20,6 +20,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             Log.Debug($"PostCoinAwake called on {coin}");
             coin.GetOrAddComponent<ProjectileBoostTracker>();
         }
+        [HarmonyPatch(typeof(Coin), nameof(Coin.GetDeleted))]
+        static class CoinDeletionPatch
+        {
+        }
 
         [HarmonyPatch(typeof(Coin), nameof(Coin.ReflectRevolver))]
         static class CoinReflectRevolverPatch
@@ -57,13 +61,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     return;
                 }
 
-                if (parryability < 0.5f)
+                var feedbacker = enemy.GetFeedbacker();
+
+                if (!feedbacker.CanParry(boostTracker, parryability))
                 {
                     deliverThatDamage();
                     return;
                 }
-
-                var feedbacker = enemy.GetFeedbacker();
 
                 if (!feedbacker.Enabled)
                 {
@@ -90,9 +94,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 counterBeamBoostTracker.CopyFrom(boostTracker);
                 counterBeamBoostTracker.IncrementEnemyBoost();
                 float coinPower = coin.power;
-
+                
                 feedbacker.QueueParry((offset) =>
                 {
+                    feedbacker.ParryFinishEffect(hitPoint + offset);
                     var parryForce = feedbacker.SolveParryForce(hitPoint + offset, (counterBeam.transform.rotation * Vector3.forward) * counterBeam.speed);
                     counterBeamGo.transform.position = hitPoint + offset;
                     counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
@@ -175,14 +180,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     deliverThatDamage();
                     return;
                 }
+                
+                var feedbacker = enemy.GetFeedbacker();
 
-                if (parryability < 0.5f)
+                if (!feedbacker.CanParry(boostTracker, parryability))
                 {
                     deliverThatDamage();
                     return;
                 }
-
-                var feedbacker = enemy.GetFeedbacker();
 
                 if (!feedbacker.Enabled)
                 {
@@ -211,6 +216,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 feedbacker.QueueParry((offset) =>
                 {
+                    feedbacker.ParryFinishEffect(hitPoint + offset);
                     var parryForce = feedbacker.SolveParryForce(hitPoint + offset, (counterBeam.transform.rotation * Vector3.forward) * counterBeam.speed);
                     counterBeamGo.transform.position = hitPoint + offset;
                     counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);

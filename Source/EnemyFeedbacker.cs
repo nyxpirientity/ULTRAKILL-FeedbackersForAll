@@ -70,6 +70,27 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         static FieldInfo timeControllerParryLightFi = typeof(TimeController).GetField("parryLight", BindingFlags.Instance | BindingFlags.NonPublic); 
 
+        public bool CanParry(ProjectileBoostTracker boostTracker, double parryability)
+        {
+            double skill;
+
+            if (boostTracker.NumEnemyBoosts == 0)
+            {
+                skill = Options.FirstHitParrySkills[_eadd.Eid.enemyType].Value;
+            }
+            else
+            {
+                skill = Options.MultiHitParrySkills[_eadd.Eid.enemyType].Value;
+            }
+
+            if (skill - (1.0 - parryability) > 0.0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public void ParryEffect(Vector3 fromPoint)
         {
             Assert.IsTrue(ReadyToParry, "EnemyFeedbacker.ParryEffect called when not ReadyToParry?");
@@ -83,11 +104,28 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             sound.GetComponentInChildren<AudioSource>().volume *= Options.EnemyParrySoundScalar.Value;
             sound.GetComponent<RemoveOnTime>().time = Options.EnemyParryDelay.Value;
             var parryFlash = UnityEngine.Object.Instantiate(Assets.ParryFlashPrefab.ToAsset(), fromPoint, Quaternion.LookRotation((NewMovement.Instance.HeadPosition - fromPoint).normalized), Options.ParryFollowsEnemy.Value ? transform : null);
+            parryFlash.transform.localScale = new Vector3(1.0f / parryFlash.transform.lossyScale.x, 1.0f / parryFlash.transform.lossyScale.y, 1.0f / parryFlash.transform.lossyScale.z);
             parryFlash.transform.localScale *= 2.0f;
             Stamina -= ParryCost;
 
             LastParryTimestamp.UpdateToNow();
         }
+
+        public void ParryFinishEffect(Vector3 fromPoint)
+        {
+            var sound = UnityEngine.Object.Instantiate((GameObject)timeControllerParryLightFi.GetValue(TimeScale.Controller), fromPoint, Quaternion.identity, transform);
+            var audioSource = sound.GetComponentInChildren<AudioSource>();
+            audioSource.volume *= Options.EnemyParrySoundScalar.Value * 0.5f;
+            audioSource.SetPitch(audioSource.GetPitch() * 1.25f);
+            sound.GetComponent<RemoveOnTime>().time = Options.EnemyParryDelay.Value;
+            var parryFlash = UnityEngine.Object.Instantiate(Assets.ParryFlashPrefab.ToAsset(), fromPoint, Quaternion.LookRotation((NewMovement.Instance.HeadPosition - fromPoint).normalized), Options.ParryFollowsEnemy.Value ? transform : null);
+            parryFlash.transform.localScale = new Vector3(1.0f / parryFlash.transform.lossyScale.x, 1.0f / parryFlash.transform.lossyScale.y, 1.0f / parryFlash.transform.lossyScale.z);
+            parryFlash.transform.localScale *= 2.0f;
+            Stamina -= ParryCost;
+
+            LastParryTimestamp.UpdateToNow();
+        }
+
 
         protected void Start()
         {

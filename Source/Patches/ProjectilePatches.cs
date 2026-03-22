@@ -149,7 +149,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     return;
                 }
 
-                if (parryability < 0.5f)
+                if (!feedbacker.CanParry(boostTracker, parryability))
                 {
                     failedParry();
                     return;
@@ -161,6 +161,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 projectile.gameObject.SetActive(false);
                 feedbacker.QueueParry((offset) => 
                 {
+                    feedbacker.ParryFinishEffect(projectile.transform.position + offset);
                     var parryForce = feedbacker.SolveParryForce(projectile.transform.position + offset, projectile.GetComponent<Rigidbody>().velocity);
                     projectile.homingType = HomingType.None;
                     projectile.transform.rotation = Quaternion.LookRotation(parryForce);

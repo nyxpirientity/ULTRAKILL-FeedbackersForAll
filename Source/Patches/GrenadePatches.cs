@@ -98,13 +98,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     return;
                 }
+                
+                feedbacker.ParryEffect(grenade.transform.position);
 
-                if ((parryability < 0.5f))
+                if (!feedbacker.CanParry(boostTracker, parryability))
                 {
                     return;
                 }
                 
-                feedbacker.ParryEffect(grenade.transform.position);
                 boostTracker.IncrementEnemyBoost();
                 
                 grenade.gameObject.SetActive(false);
@@ -112,6 +113,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 feedbacker.QueueParry((offset) =>
                 {
                     grenade.gameObject.SetActive(true);
+                    feedbacker.ParryFinishEffect(grenade.transform.position  + offset);
                     var parryForce = feedbacker.SolveParryForce(grenade.transform.position + offset, grenade.rb.velocity);
                     if (grenade.rocket)
                     {

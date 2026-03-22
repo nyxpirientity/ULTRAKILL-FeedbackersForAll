@@ -150,7 +150,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 if (bigOomph)
                 {
                     MakeExplosiveAndExplosionUnique();
-                    _proj.enemyDamageMultiplier *= 1.4f;
+                    _proj.enemyDamageMultiplier *= 2.0f;
                     _proj.damage *= 1.2f;
                     _explosion.ExplosionScale *= 1.5f;
                     _explosion.ExplosionSpeedScale *= 1.5f;
@@ -168,7 +168,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 if (bigOomph)
                 {
                     MakeExplosiveAndExplosionUnique();
-                    _cannonball.damage *= 1.2f;
+                    _cannonball.damage *= 2.0f;
                     _explosion.ExplosionScale *= 1.5f;
                     _explosion.ExplosionSpeedScale *= 1.5f;
                     _explosion.ExplosionDamageScale += 0.1f;
@@ -254,15 +254,22 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 }
                 else if (TryGetComponent(out RevolverBeam revolverBeam))
                 {
-                    if (revolverBeam.beamType == BeamType.Enemy || revolverBeam.beamType == BeamType.MaliciousFace)
+                    if (revolverBeam.previouslyHitTransform != null && revolverBeam.noMuzzleflash)
                     {
-                        ProjectileType = ProjectileCategory.EnemyRevolverBeam;
+                        ProjectileType = ProjectileCategory.Coin;
                     }
                     else
                     {
-                        ProjectileType = ProjectileCategory.RevolverBeam;                          
+                        if (revolverBeam.beamType == BeamType.Enemy || revolverBeam.beamType == BeamType.MaliciousFace)
+                        {
+                            ProjectileType = ProjectileCategory.EnemyRevolverBeam;
+                        }
+                        else
+                        {
+                            ProjectileType = ProjectileCategory.RevolverBeam;                          
+                        }
                     }
-
+                    
                     if (revolverBeam.attributes.Contains(HitterAttribute.Electricity))
                     {
                         Electric = true;

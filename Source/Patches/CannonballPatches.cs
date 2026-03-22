@@ -93,7 +93,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     return;
                 }
 
-                if ((parryability < 0.5f))
+                if (!feedbacker.CanParry(boostTracker, parryability))
                 {
                     failedParry();
                     return;
@@ -110,10 +110,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 
                 feedbacker.QueueParry((offset) =>
                 {
+                    cannonball.Rigidbody.transform.position += offset;
+                    feedbacker.ParryFinishEffect(cannonball.transform.position);
                     cannonball.gameObject.SetActive(true);
                     var parryForce = enemy.GetFeedbacker().SolveParryForce(cannonball.transform.position, cannonball.Rigidbody.velocity);
                     
-                    cannonball.Rigidbody.transform.position += offset;
                     cannonball.Rigidbody.velocity = parryForce * cannonballSpeed;
                     cannonball.Rigidbody.transform.rotation = Quaternion.LookRotation(parryForce);
                 });

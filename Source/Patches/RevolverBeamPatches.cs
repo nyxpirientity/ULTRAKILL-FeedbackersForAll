@@ -48,13 +48,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     return;
                 }
+                
+                var feedbacker = enemy.GetFeedbacker();
 
-                if (parryability < 0.5f)
+                if (!feedbacker.CanParry(boostTracker, parryability))
                 {
                     return;
                 }
-
-                var feedbacker = enemy.GetFeedbacker();
 
                 if (!feedbacker.Enabled)
                 {
@@ -78,6 +78,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
                     counterBeamBoostTracker.CopyFrom(boostTracker);
                     counterBeamBoostTracker.IncrementEnemyBoost();
+                    feedbacker.ParryFinishEffect(hit.point + offset);
                     var parryForce = feedbacker.SolveParryForce(hit.point + offset, counterBeamGo.transform.rotation * Vector3.forward * counterBeam.speed);
                     counterBeamGo.transform.position = hit.point + offset;
                     counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
@@ -146,12 +147,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     return;
                 }
 
-                if (parryability < 0.5f)
+                var feedbacker = enemy.GetFeedbacker();
+
+                if (!feedbacker.CanParry(boostTracker, parryability))
                 {
                     return;
                 }
-
-                var feedbacker = enemy.GetFeedbacker();
 
                 if (!feedbacker.Enabled)
                 {
@@ -175,6 +176,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     counterBeamBoostTracker.CopyFrom(boostTracker);
                     counterBeamBoostTracker.IncrementEnemyBoost();
                     counterBeamGo.transform.position = hit.point + offset;
+                    feedbacker.ParryFinishEffect(hit.point + offset);
                     var parryForce = feedbacker.SolveParryForce(hit.point + offset, (counterBeam.transform.rotation * Vector3.forward) * counterBeam.speed);
                     counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
                     counterBeamGo.SetActive(true);

@@ -86,7 +86,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return;
             }
 
-            if ((parryability < 0.5f))
+            if (!feedbacker.CanParry(boostTracker, parryability))
             {
                 return;
             }
