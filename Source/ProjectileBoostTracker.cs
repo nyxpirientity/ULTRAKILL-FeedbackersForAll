@@ -105,7 +105,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             IgnoreColliders = new Collider[]{};
             
-            if (NumPlayerBoosts > 1)
+            if (NumPlayerBoosts > 1 || NumEnemyBoosts >= 1)
             {
                 BoostOomph(true);
             }
@@ -140,6 +140,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         private void BoostOomph(bool bigOomph)
         {
+            if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
             if (NumEnemyBoosts == 0)
             {
                 return;
@@ -149,15 +154,18 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 if (bigOomph)
                 {
+                    Log.Debug("Oomph boosting for projectile bigly");
                     MakeExplosiveAndExplosionUnique();
                     _proj.enemyDamageMultiplier *= 2.0f;
                     _proj.damage *= 1.2f;
-                    _explosion.ExplosionScale *= 1.5f;
-                    _explosion.ExplosionSpeedScale *= 1.5f;
-                    _explosion.ExplosionDamageScale += 0.1f;
+                    _explosion.ExplosionScale += 0.5f;
+                    _explosion.ExplosionSpeedScale += 0.5f;
+                    _explosion.ExplosionDamageScale += 0.25f;
+                    _explosion.ExplosionEnemyDamageMultiplierScale += 0.75f;
                 }
                 else
                 {
+                    Log.Debug("Oomph boosting for projectile not so bigly");
                     MakeExplosiveAndExplosionUnique();
                     _proj.enemyDamageMultiplier *= 1.2f;
                     _proj.damage *= 1.1f;
@@ -167,6 +175,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 if (bigOomph)
                 {
+                    Log.Debug("Oomph boosting for cannonball bigly");
                     MakeExplosiveAndExplosionUnique();
                     _cannonball.damage *= 2.0f;
                     _explosion.ExplosionScale *= 1.5f;
@@ -175,6 +184,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 }
                 else
                 {
+                    Log.Debug("Oomph boosting for not so bigly");
                     MakeExplosiveAndExplosionUnique();
                     _cannonball.damage *= 1.1f;
                 }
@@ -431,11 +441,40 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             if (other._explosiveAndExplosionUnique)
             {
-                _explosiveAndExplosionUnique = true;
                 _prefabHolder = new GameObject();
                 _prefabHolder.transform.parent = transform;
                 _prefabHolder.SetActive(false);
                 _explosion = GameObject.Instantiate(_explosion.gameObject, _prefabHolder.transform).GetComponent<ExplosionAdditions>();
+                _explosiveAndExplosionUnique = true;
+            }
+
+            var proj = GetComponent<Projectile>();
+
+            if (other._proj != null && proj != null)
+            {
+                var explosion = other._proj.explosionEffect.GetComponentInChildren<Explosion>();
+                
+                if (explosion != null)
+                {
+                    proj.explosionEffect = other._proj.explosionEffect;
+                }
+            }
+
+            var revolverBeam = other.GetComponent<RevolverBeam>();
+
+            if (revolverBeam != null && proj != null)
+            {
+                var explosion = revolverBeam.hitParticle.GetComponentInChildren<Explosion>();
+                
+                if (explosion != null)
+                {
+                    _prefabHolder ??= new GameObject();
+                    _prefabHolder.SetActive(false);
+                    _prefabHolder.transform.parent = transform;
+                    proj.explosionEffect = GameObject.Instantiate(revolverBeam.hitParticle, _prefabHolder.transform);
+                    _explosion = proj.explosionEffect.GetOrAddComponent<ExplosionAdditions>();
+                    _explosiveAndExplosionUnique = true;
+                }
             }
         }
 
@@ -462,7 +501,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return;
             }
 
-            _prefabHolder = new GameObject();
+            Log.Debug($"Making explosive and explosion unique for {this}");
+
+            _prefabHolder ??= new GameObject();
             _prefabHolder.transform.parent = transform;
             _prefabHolder.SetActive(false);
 

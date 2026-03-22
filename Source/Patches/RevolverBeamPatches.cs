@@ -71,12 +71,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 
                 float revBeamDmg = revolverBeam.damage;
 
+                var counterBeamGo = GameObject.Instantiate(NyxLib.Assets.EnemyRevolverBullet);
+                var counterBeam = counterBeamGo.GetComponent<Projectile>();
+                var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
+                counterBeamBoostTracker.CopyFrom(boostTracker);
+                
                 feedbacker.QueueParry((offset) => 
                 {
-                    var counterBeamGo = GameObject.Instantiate(NyxLib.Assets.EnemyRevolverBullet);
-                    var counterBeam = counterBeamGo.GetComponent<Projectile>();
-                    var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
-                    counterBeamBoostTracker.CopyFrom(boostTracker);
                     counterBeamBoostTracker.IncrementEnemyBoost();
                     feedbacker.ParryFinishEffect(hit.point + offset);
                     var parryForce = feedbacker.SolveParryForce(hit.point + offset, counterBeamGo.transform.rotation * Vector3.forward * counterBeam.speed);
@@ -89,8 +90,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                     //counterBeam.safeEnemyType = enemy.Eid.enemyType;
                     counterBeam.playerBullet = true;
-                    counterBeam.damage = revBeamDmg* 25.0f;
-                    counterBeam.enemyDamageMultiplier = 1.0f / 25.0f;
+                    counterBeam.damage = revBeamDmg * 25.0f;
+                    counterBeam.enemyDamageMultiplier = 3.0f / 25.0f;
                 });
 
                 revolverBeam.fake = true;
@@ -166,14 +167,15 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 
                 feedbacker.ParryEffect(hit.point);
 
-                float revBeamDmg = revolverBeam.damage;
+                float revBeamDmg = revolverBeam.damage * 3;
+
+                var counterBeamGo = GameObject.Instantiate(NyxLib.Assets.EnemyRevolverBullet);
+                var counterBeam = counterBeamGo.GetComponent<Projectile>();
+                var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
+                counterBeamBoostTracker.CopyFrom(boostTracker);
 
                 feedbacker.QueueParry((offset) => 
                 {
-                    var counterBeamGo = GameObject.Instantiate(NyxLib.Assets.EnemyRevolverBullet);
-                    var counterBeam = counterBeamGo.GetComponent<Projectile>();
-                    var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
-                    counterBeamBoostTracker.CopyFrom(boostTracker);
                     counterBeamBoostTracker.IncrementEnemyBoost();
                     counterBeamGo.transform.position = hit.point + offset;
                     feedbacker.ParryFinishEffect(hit.point + offset);
@@ -187,8 +189,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                     //counterBeam.safeEnemyType = enemy.Eid.enemyType;
                     counterBeam.playerBullet = true;
-                    counterBeam.damage = revBeamDmg * 25.0f;
-                    counterBeam.enemyDamageMultiplier = 1.0f / 25.0f;
+                    counterBeam.damage = revBeamDmg * 11.0f;
+                    counterBeam.enemyDamageMultiplier = 1.0f / 11.0f;
                 });
 
                 revolverBeam.fake = true;
