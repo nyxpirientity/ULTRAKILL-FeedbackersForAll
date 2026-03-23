@@ -192,8 +192,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                     //counterBeam.safeEnemyType = enemy.Eid.enemyType;
                     counterBeam.playerBullet = true;
-                    counterBeam.damage = revBeamDmg * 11.0f;
-                    counterBeam.enemyDamageMultiplier = 1.0f / 11.0f;
+                    counterBeam.damage = revBeamDmg * 5.0f;
+                    counterBeam.enemyDamageMultiplier = 1.0f / 5.0f;
                 });
 
                 revolverBeam.fake = true;
