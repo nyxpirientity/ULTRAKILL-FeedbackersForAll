@@ -17,12 +17,17 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         private static void PostCoinAwake(EventMethodCancelInfo cancelInfo, Coin coin)
         {
-            Log.Debug($"PostCoinAwake called on {coin}");
             coin.GetOrAddComponent<ProjectileBoostTracker>();
         }
-        [HarmonyPatch(typeof(Coin), nameof(Coin.GetDeleted))]
-        static class CoinDeletionPatch
+
+        [HarmonyPatch(typeof(Coin), "SpawnBeam")]
+        static class CoinSpawnBeamPatch
         {
+            public static void Prefix(Coin __instance)
+            {
+                var boostTracker = __instance.refBeam.GetOrAddComponent<ProjectileBoostTracker>();
+                boostTracker.CopyFrom(__instance.GetComponent<ProjectileBoostTracker>());
+            }
         }
 
         [HarmonyPatch(typeof(Coin), nameof(Coin.ReflectRevolver))]
@@ -135,6 +140,15 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             public static void Prefix(Coin __instance)
             {
                 _currentCoin = __instance;
+                
+                FieldInfo altBeamFI = typeof(Coin).GetField("altBeam", BindingFlags.NonPublic | BindingFlags.Instance);
+                
+                var altBeam = altBeamFI.GetValue(__instance) as GameObject;
+
+                if (altBeam != null)
+                {
+                    altBeam.GetComponent<ProjectileBoostTracker>().CopyFrom(__instance.GetComponent<ProjectileBoostTracker>());
+                }
             }
 
             public static void Postfix(Coin __instance)
