@@ -14,6 +14,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         public static Dictionary<EnemyType, ConfigEntry<double>> FirstHitParrySkills = new Dictionary<EnemyType, ConfigEntry<double>>(64);
         public static Dictionary<EnemyType, ConfigEntry<double>> MultiHitParrySkills = new Dictionary<EnemyType, ConfigEntry<double>>(64);
 
+        public static ConfigEntry<bool> ShotCoinsParryable = null;
+        public static ConfigEntry<bool> PunchedCoinsParryable = null;
+        public static ConfigEntry<bool> BeamsParryable = null;
+        public static ConfigEntry<bool> GrenadesParryable = null;
+        public static ConfigEntry<bool> PlayerProjectilesParryable = null;
+        public static ConfigEntry<bool> CannonballsParryable = null;
+        public static ConfigEntry<bool> SawsParryable = null;
+
         public static void Initialize()
         {
             HitstopOnEnemyParry = Config.Bind($"Preferences", "HitstopOnEnemyParry", false);
@@ -21,6 +29,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             ParryFollowsEnemy = Config.Bind($"Balance", "ParryFollowsEnemy", true);
             EnemyParrySoundScalar = Config.Bind($"Preference.Audio", "EnemyParrySoundScalar", 4.0f);
 
+            ShotCoinsParryable = Config.Bind($"Balance", "ShotCoinsParryable", true);
+            PunchedCoinsParryable = Config.Bind($"Balance", "PunchedCoinsParryable", true);
+            BeamsParryable = Config.Bind($"Balance", "BeamsParryable", true);
+            GrenadesParryable = Config.Bind($"Balance", "GrenadesParryable", true);
+            PlayerProjectilesParryable = Config.Bind($"Balance", "PlayerProjectilesParryable", true);
+            CannonballsParryable = Config.Bind($"Balance", "CannonballsParryable", true);
+            SawsParryable = Config.Bind($"Balance", "SawsParryable", true);
+             
             foreach (var enumVal in Enum.GetValues(typeof(EnemyType)))
             {
                 double defaultMultiHitSkill = 0.5;
@@ -29,7 +45,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 switch ((EnemyType)enumVal)
                 {
                     case EnemyType.V2:
-                        defaultFirstHitSkill = 1.01;
+                        defaultFirstHitSkill = 0.8;
                         defaultMultiHitSkill = 0.75;
                         break;
                     case EnemyType.V2Second:

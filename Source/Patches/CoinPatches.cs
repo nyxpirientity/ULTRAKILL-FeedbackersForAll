@@ -43,6 +43,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     eid.DeliverDamage(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);  
                 };
+                
+                if (!Options.ShotCoinsParryable.Value)
+                {
+                    deliverThatDamage();
+                    return;
+                }
 
                 if (!NyxLib.Cheats.Enabled)
                 {
@@ -170,6 +176,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     eid.DeliverDamage(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);  
                 };
+
+                if (!Options.PunchedCoinsParryable.Value)
+                {
+                    deliverThatDamage();
+                    return;
+                }
 
                 if (!NyxLib.Cheats.Enabled)
                 {

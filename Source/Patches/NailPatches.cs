@@ -53,6 +53,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             
             Assert.IsNotNull(enemy);
 
+            if (!Options.SawsParryable.Value)
+            {
+                return;
+            }
+
             if (enemy.Eid.Dead)
             {
                 return;

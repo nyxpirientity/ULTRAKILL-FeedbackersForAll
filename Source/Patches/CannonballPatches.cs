@@ -29,6 +29,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             Collider col = cannonball.GetComponent<Collider>();
             var boostTracker = cannonball.GetComponent<ProjectileBoostTracker>();
 
+            if (!Options.CannonballsParryable.Value)
+            {
+                return;
+            }
+
             Action failedParry = () =>
             {
                 if (boostTracker.NumPlayerBoosts > 0 && boostTracker.NumEnemyBoosts > 0)

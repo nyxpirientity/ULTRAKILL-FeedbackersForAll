@@ -74,6 +74,17 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         {
             double skill;
 
+            var enemyType = _eadd.Eid.enemyType;
+
+            if (enemyType == EnemyType.V2)
+            {
+                var v2 = GetComponent<V2>();
+                if (v2.secondEncounter)
+                {
+                    enemyType = EnemyType.V2Second;
+                }
+            }
+
             if (boostTracker.NumBoosts == 0)
             {
                 skill = Options.FirstHitParrySkills[_eadd.Eid.enemyType].Value;

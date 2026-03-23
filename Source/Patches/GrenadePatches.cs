@@ -62,6 +62,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return;
             }
 
+            if (!Options.GrenadesParryable.Value)
+            {
+                return;
+            }
+
             var boostTracker = grenade.GetComponent<ProjectileBoostTracker>();
 
             var parryability = boostTracker.NotifyContact();

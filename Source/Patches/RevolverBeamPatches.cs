@@ -32,12 +32,27 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return;
             }
 
+            if (!Options.BeamsParryable.Value)
+            {
+                return;
+            }
+
             if (revolverBeam.beamType == BeamType.Enemy || revolverBeam.beamType == BeamType.MaliciousFace)
             {
                 return;
             }
 
             var boostTracker = revolverBeam.GetComponent<ProjectileBoostTracker>();
+
+            if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Coin && !Options.ShotCoinsParryable.Value)
+            {
+                return;
+            }
+            
+            if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Grenade && !Options.GrenadesParryable.Value)
+            {
+                return;
+            }
 
             var parryability = boostTracker.NotifyContact();
 
@@ -112,6 +127,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return;
             }
 
+            if (!Options.BeamsParryable.Value)
+            {
+                return;
+            }
+
             if (revolverBeam.beamType == BeamType.Enemy || revolverBeam.beamType == BeamType.MaliciousFace)
             {
                 return;
@@ -125,6 +145,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
 
             var boostTracker = revolverBeam.GetComponent<ProjectileBoostTracker>();
+
+            if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Coin && !Options.ShotCoinsParryable.Value)
+            {
+                return;
+            }
 
             var parryability = boostTracker.NotifyContact();
 
