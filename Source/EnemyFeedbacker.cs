@@ -27,8 +27,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             } 
         }
 
-        public float ParryCost { get => 0.36f; }
-        public float ParryCooldown { get => 0.1f; }
+        public float ParryCost { get => (float)Options.ParryStaminaCost[_enemyType].Value; }
+        public float ParryCooldown { get => (float)Options.MinParryCooldowns[_enemyType].Value; }
         public FixedTimeStamp LastParryTimestamp;
         public float Stamina { get; private set; } = 0;
         public static int MonoRegistrarIndex { get; private set; }
@@ -74,24 +74,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         {
             double skill;
 
-            var enemyType = _eadd.Eid.enemyType;
-
-            if (enemyType == EnemyType.V2)
+            if (boostTracker.NumBoosts == 0 || (boostTracker.NumEnemyBoosts == 0 && boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Grenade))
             {
-                var v2 = GetComponent<V2>();
-                if (v2.secondEncounter)
-                {
-                    enemyType = EnemyType.V2Second;
-                }
-            }
-
-            if (boostTracker.NumBoosts == 0)
-            {
-                skill = Options.FirstHitParrySkills[_eadd.Eid.enemyType].Value;
+                skill = Options.FirstHitParrySkills[_enemyType].Value;
             }
             else
             {
-                skill = Options.MultiHitParrySkills[_eadd.Eid.enemyType].Value;
+                skill = Options.MultiHitParrySkills[_enemyType].Value;
             }
 
             if (skill - (1.0 - parryability) > 0.0)
@@ -140,7 +129,16 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         protected void Start()
         {
-            
+            _enemyType = _eadd.Eid.enemyType;
+
+            if (_enemyType == EnemyType.V2)
+            {
+                var v2 = GetComponent<V2>();
+                if (v2.secondEncounter)
+                {
+                    _enemyType = EnemyType.V2Second;
+                }
+            }
         }
 
         protected void Update()
@@ -149,7 +147,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         protected void FixedUpdate()
         {
-            Stamina = Mathf.MoveTowards(Stamina, 1.0f, (Time.fixedDeltaTime / 1.6f) * 0.4f);
+            Stamina = Mathf.MoveTowards(Stamina, 1.0f, (Time.fixedDeltaTime * (float)Options.ParryStaminaRechargeRate[_enemyType].Value));
 
             for (int i = 0; i < _queuedParries.Count; i++)
             {
@@ -202,5 +200,6 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         }
 
         private List<QueuedParry> _queuedParries = new List<QueuedParry>(2);
+        private EnemyType _enemyType = EnemyType.Wicked;
     }
 }

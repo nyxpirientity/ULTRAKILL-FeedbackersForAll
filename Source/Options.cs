@@ -11,6 +11,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         public static ConfigEntry<float> EnemyParryDelay = null;
         public static ConfigEntry<float> EnemyParrySoundScalar = null;
         public static ConfigEntry<string> ParryProsString = null;
+
+        public static Dictionary<EnemyType, ConfigEntry<double>> ParryStaminaCost = new Dictionary<EnemyType, ConfigEntry<double>>(64);
+        public static Dictionary<EnemyType, ConfigEntry<double>> ParryStaminaRechargeRate = new Dictionary<EnemyType, ConfigEntry<double>>(64);
+        public static Dictionary<EnemyType, ConfigEntry<double>> MinParryCooldowns = new Dictionary<EnemyType, ConfigEntry<double>>(64);
+
         public static Dictionary<EnemyType, ConfigEntry<double>> FirstHitParrySkills = new Dictionary<EnemyType, ConfigEntry<double>>(64);
         public static Dictionary<EnemyType, ConfigEntry<double>> MultiHitParrySkills = new Dictionary<EnemyType, ConfigEntry<double>>(64);
 
@@ -42,6 +47,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 double defaultMultiHitSkill = 0.5;
                 double defaultFirstHitSkill = 0.75;
 
+                double defaultStaminaCost = 0.4;
+                double defaultStaminaRechargeRate = 0.25;
+                double defaultMinParryCooldown = 0.1;
+
                 switch ((EnemyType)enumVal)
                 {
                     case EnemyType.V2:
@@ -66,6 +75,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 FirstHitParrySkills[(EnemyType)enumVal] = Config.Bind($"Balance.{enumVal}", $"FirstHitSkill", defaultFirstHitSkill, $"Sets how good {enumVal} is/are at parrying on first contact with an enemy");
                 MultiHitParrySkills[(EnemyType)enumVal] = Config.Bind($"Balance.{enumVal}", $"MultiHitSkill", defaultMultiHitSkill, $"Sets how good {enumVal} is/are at parrying past the first contact with an enemy");
+                MinParryCooldowns[(EnemyType)enumVal] = Config.Bind($"Balance.{enumVal}", $"MinParryCooldown", defaultMinParryCooldown);
+                ParryStaminaRechargeRate[(EnemyType)enumVal] = Config.Bind($"Balance.{enumVal}", $"ParryStaminaRechargeRate", defaultStaminaRechargeRate);
+                ParryStaminaCost[(EnemyType)enumVal] = Config.Bind($"Balance.{enumVal}", $"ParryStaminaCost", defaultStaminaCost);
             }
 
             Config.ConfigReloaded += OnConfigReload;

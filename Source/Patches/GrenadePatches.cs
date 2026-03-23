@@ -104,13 +104,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     return;
                 }
                 
-                feedbacker.ParryEffect(grenade.transform.position);
-
                 if (!feedbacker.CanParry(boostTracker, parryability))
                 {
                     return;
                 }
                 
+                feedbacker.ParryEffect(grenade.transform.position);
                 boostTracker.IncrementEnemyBoost();
                 
                 grenade.gameObject.SetActive(false);
