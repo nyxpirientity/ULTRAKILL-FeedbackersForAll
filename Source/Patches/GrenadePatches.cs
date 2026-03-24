@@ -118,14 +118,16 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     grenade.gameObject.SetActive(true);
                     feedbacker.ParryFinishEffect(grenade.transform.position  + offset);
-                    var parryForce = feedbacker.SolveParryForce(grenade.transform.position + offset, grenade.rb.velocity);
+                    Vector3 parryForce;
                     if (grenade.rocket)
                     {
+                        parryForce = feedbacker.SolveParryForce(grenade.transform.position + offset, (grenade.transform.rotation * Vector3.forward) * grenade.rocketSpeed);
                         grenade.rb.velocity = parryForce * grenade.rb.velocity.magnitude;
                         grenade.rb.rotation = Quaternion.LookRotation(parryForce);
                     }
                     else
                     {
+                        parryForce = feedbacker.SolveParryForce(grenade.transform.position + offset, grenade.rb.velocity);
                         var vel = (parryForce * grenade.rb.velocity.magnitude * 5.0f);
 
                         if (vel.magnitude > 80.0f)

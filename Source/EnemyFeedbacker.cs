@@ -72,9 +72,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         public bool CanParry(ProjectileBoostTracker boostTracker, double parryability)
         {
+            if (!ReadyToParry)
+            {
+                return false;
+            }
+
             double skill;
 
-            if (boostTracker.NumBoosts == 0 || (boostTracker.NumEnemyBoosts == 0 && boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Grenade))
+            if (boostTracker.NumBoosts == 0 || (boostTracker.NumEnemyBoosts == 0 && boostTracker.IsPlayerSourced))
             {
                 skill = Options.FirstHitParrySkills[_enemyType].Value;
             }
@@ -173,18 +178,22 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         {
             var v1 = NewMovement.Instance;
 
-            var dist = Vector3.Distance(projectilePosition, v1.HeadPosition);
-            Vector3 direction; 
-            if (projectileVelocity.magnitude > 0.0f)
-            {
-                direction = (((v1.HeadPosition + (v1.travellerVelocity * ((Mathf.Pow(dist, 0.8f) / projectileVelocity.magnitude))))) - projectilePosition).normalized;
-            }
-            else
-            {
-                direction = ((v1.HeadPosition) - projectilePosition).normalized;
-            }
+            var targetPos = v1.HeadPosition;
+            var targetVel = v1.travellerVelocity;
 
-            return direction;
+            Vector3 direction; 
+
+            direction = (targetPos - projectilePosition).normalized;
+
+            var targetTowardProjVel = Vector3.Project(targetVel, direction);            
+            var targetTowardProjSpeed = targetTowardProjVel.magnitude * ((Vector3.Distance(targetTowardProjVel.normalized, (targetPos - projectilePosition).normalized) > 0.5f) ? -1.0f : 1.0f);
+            
+            var indirectTargetVel = targetVel - Vector3.Project(targetVel, direction);
+            var relProjectileSpeed = projectileVelocity.magnitude + targetTowardProjSpeed;
+            var dist = Vector3.Distance(projectilePosition, targetPos + (indirectTargetVel));
+            var targetDirection = ((targetPos + (indirectTargetVel * (dist / relProjectileSpeed))) - projectilePosition).normalized;
+
+            return targetDirection;
         }
 
         static internal void Initialize()

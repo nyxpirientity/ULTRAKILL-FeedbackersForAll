@@ -17,6 +17,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         public bool HasBeenBoosted { get => NumPlayerBoosts != 0 || NumEnemyBoosts != 0; }
         public bool LastBoostedByPlayer = false;
+        public bool IsPlayerSourced { get => ProjectileType == ProjectileCategory.RevolverBeam || ProjectileType == ProjectileCategory.PlayerProjectile || ProjectileType == ProjectileCategory.Rocket || ProjectileType == ProjectileCategory.Grenade; }
         
         public uint NumPlayerBoosts { get => _numPlayerBoosts; private set => _numPlayerBoosts = value; }
         
