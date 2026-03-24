@@ -127,7 +127,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     }
                     else
                     {
-                        parryForce = feedbacker.SolveParryForce(grenade.transform.position + offset, grenade.rb.velocity);
+                        parryForce = feedbacker.SolveParryForce(grenade.transform.position + offset, grenade.rb.velocity * 5.0f);
                         var vel = (parryForce * grenade.rb.velocity.magnitude * 5.0f);
 
                         if (vel.magnitude > 80.0f)

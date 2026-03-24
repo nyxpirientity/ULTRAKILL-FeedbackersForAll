@@ -45,29 +45,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             _eadd = GetComponent<EnemyComponents>();
             
             Assert.IsNotNull(_eadd);
-
-            _eadd.PreHurt += PreHurt;
-            _eadd.PostHurt += PostHurt;
         }
-
-        private void PreHurt(GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
-        {
-            if (!Enabled)
-            {
-                return;
-            }
-
-        }
-
-        private void PostHurt(GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
-        {
-            if (!Enabled)
-            {
-                return;
-            }
-
-        }
-
+        
         static FieldInfo timeControllerParryLightFi = typeof(TimeController).GetField("parryLight", BindingFlags.Instance | BindingFlags.NonPublic); 
 
         public bool CanParry(ProjectileBoostTracker boostTracker, double parryability)

@@ -89,7 +89,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 
                 float revBeamDmg = revolverBeam.damage;
 
-                var counterBeamGo = GameObject.Instantiate(NyxLib.Assets.EnemyRevolverBullet);
+                var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
                 var counterBeam = counterBeamGo.GetComponent<Projectile>();
                 var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
                 counterBeamBoostTracker.CopyFrom(boostTracker);
@@ -197,7 +197,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 float revBeamDmg = revolverBeam.damage * 3;
 
-                var counterBeamGo = GameObject.Instantiate(NyxLib.Assets.EnemyRevolverBullet);
+                var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
                 var counterBeam = counterBeamGo.GetComponent<Projectile>();
                 var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
                 counterBeamBoostTracker.CopyFrom(boostTracker);
