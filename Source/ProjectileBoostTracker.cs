@@ -90,13 +90,15 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             _creationProgressParryabilityDist = ParryabilityTracker.NotifyCreationProgress(GetHashCode());
             _creationProgressTime.UpdateToNow();
 
-            SafeEid = null;
-            _safeEnemyTypeCountDown = 0.0f;
-            
+            SafeEid = null;      
+                  
             if (NumEnemyBoosts == 0)
             {
                 return;
             }
+
+            _safeEnemyTypeCountDown = 0.0f;
+
 
             if (_proj != null)
             {
