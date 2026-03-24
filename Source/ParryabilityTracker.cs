@@ -181,6 +181,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         return;
                     }
 
+                    double? firstDiff = null;
                     double lastDiff = 0.0;
                     double sum = 0.0;
                     _averageDiffs.Clear();
@@ -194,8 +195,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                             lastTimestamp = timestamp;
                             continue;
                         }
-
+                 
                         lastDiff = (lastTimestamp.Value.TimeStamp - timestamp.TimeStamp).Value;
+
+                        firstDiff ??= lastDiff;   
+
                         sum += lastDiff;
                         _averageDiffs.Add(sum);
                         lastTimestamp = timestamp;
@@ -208,7 +212,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     {
                         _averageDiffs[i] /= i + 1;
                         var diff = _averageDiffs[i];
-                        var diffDist = Math.Abs(diff - lastDiff);
+                        var diffDist = Math.Abs(diff - firstDiff.Value);
 
                         if (diffDist < lowestDist)
                         {
