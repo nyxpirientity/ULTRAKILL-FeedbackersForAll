@@ -69,6 +69,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         defaultFirstHitSkill = 1.01;
                         defaultMultiHitSkill = 0.75;
                         break;
+                    case EnemyType.GabrielSecond:
+                        defaultFirstHitSkill = 1.01;
+                        defaultMultiHitSkill = 0.5;
+                        break;
                     default:
                         break;
                 }
