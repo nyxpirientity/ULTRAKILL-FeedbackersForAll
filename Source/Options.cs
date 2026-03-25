@@ -88,11 +88,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     case EnemyType.CancerousRodent:
                         defaultFirstHitSkill = 1.01;
                         defaultMultiHitSkill = 0.85;
+                        defaultStaminaRechargeRate = 0.3f;
                     break;
                     case EnemyType.VeryCancerousRodent:
                         defaultFirstHitSkill = 1.01;
                         defaultMultiHitSkill = 0.5;
-                        defaultStaminaRechargeRate = 0.3f;
+                        defaultStaminaRechargeRate = 0.2f;
                     break;
                     default:
                         break;
