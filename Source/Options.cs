@@ -19,6 +19,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         public static Dictionary<EnemyType, ConfigEntry<double>> FirstHitParrySkills = new Dictionary<EnemyType, ConfigEntry<double>>(64);
         public static Dictionary<EnemyType, ConfigEntry<double>> MultiHitParrySkills = new Dictionary<EnemyType, ConfigEntry<double>>(64);
 
+        public static ConfigEntry<float> FirstHitSkillScalar = null;
+        public static ConfigEntry<float> MultiHitSkillScalar = null;
+        public static ConfigEntry<float> MinParryCooldownScalar = null;
+        public static ConfigEntry<float> StaminaRechargeRateScalar = null;
+        public static ConfigEntry<float> StaminaCostScalar = null;
+
         public static ConfigEntry<bool> ShotCoinsParryable = null;
         public static ConfigEntry<bool> PunchedCoinsParryable = null;
         public static ConfigEntry<bool> BeamsParryable = null;
@@ -41,6 +47,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             PlayerProjectilesParryable = Config.Bind($"Balance", "PlayerProjectilesParryable", true);
             CannonballsParryable = Config.Bind($"Balance", "CannonballsParryable", true);
             SawsParryable = Config.Bind($"Balance", "SawsParryable", true);
+
+            FirstHitSkillScalar = Config.Bind($"Balance", "FirstHitSkillScalar", 1.0f);
+            MultiHitSkillScalar = Config.Bind($"Balance", "MultiHitSkillScalar", 1.0f);
+            MinParryCooldownScalar = Config.Bind($"Balance", "MinParryCooldownScalar", 1.0f);
+            StaminaRechargeRateScalar = Config.Bind($"Balance", "StaminaRechargeRateScalar", 1.0f);
+            StaminaCostScalar = Config.Bind($"Balance", "StaminaCostScalar", 1.0f);
              
             foreach (var enumVal in Enum.GetValues(typeof(EnemyType)))
             {
@@ -48,7 +60,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 double defaultFirstHitSkill = 0.75;
 
                 double defaultStaminaCost = 0.4;
-                double defaultStaminaRechargeRate = 0.25;
+                double defaultStaminaRechargeRate = 0.175;
                 double defaultMinParryCooldown = 0.1;
 
                 switch ((EnemyType)enumVal)

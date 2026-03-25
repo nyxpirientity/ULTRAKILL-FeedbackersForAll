@@ -27,8 +27,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             } 
         }
 
-        public float ParryCost { get => (float)Options.ParryStaminaCost[_enemyType].Value; }
-        public float ParryCooldown { get => (float)Options.MinParryCooldowns[_enemyType].Value; }
+        public float ParryCost { get => (float)Options.ParryStaminaCost[_enemyType].Value * Options.StaminaCostScalar.Value; }
+        public float ParryCooldown { get => (float)Options.MinParryCooldowns[_enemyType].Value * Options.MinParryCooldownScalar.Value; }
         public FixedTimeStamp LastParryTimestamp;
         public float Stamina { get; private set; } = 0;
         public static int MonoRegistrarIndex { get; private set; }
@@ -60,11 +60,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             if (boostTracker.NumBoosts == 0 || (boostTracker.NumEnemyBoosts == 0 && boostTracker.IsPlayerSourced))
             {
-                skill = Options.FirstHitParrySkills[_enemyType].Value;
+                skill = Options.FirstHitParrySkills[_enemyType].Value * Options.FirstHitSkillScalar.Value;
             }
             else
             {
-                skill = Options.MultiHitParrySkills[_enemyType].Value;
+                skill = Options.MultiHitParrySkills[_enemyType].Value * Options.MultiHitSkillScalar.Value;
             }
 
             if (skill - (1.0 - parryability) > 0.0)
@@ -131,7 +131,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         protected void FixedUpdate()
         {
-            Stamina = Mathf.MoveTowards(Stamina, 1.0f, (Time.fixedDeltaTime * (float)Options.ParryStaminaRechargeRate[_enemyType].Value));
+            Stamina = Mathf.MoveTowards(Stamina, 1.0f, (Time.fixedDeltaTime * (float)Options.ParryStaminaRechargeRate[_enemyType].Value * Options.StaminaRechargeRateScalar.Value));
 
             for (int i = 0; i < _queuedParries.Count; i++)
             {

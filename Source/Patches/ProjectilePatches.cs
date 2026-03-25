@@ -34,6 +34,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
 
             var boostTracker = projectile.GetComponent<ProjectileBoostTracker>();
+
+            if (boostTracker.IsPlayerSourced && !Options.PlayerProjectilesParryable.Value)
+            {
+                return;
+            }
                 
             if (boostTracker.IgnoreColliders.Contains(other))
             {
