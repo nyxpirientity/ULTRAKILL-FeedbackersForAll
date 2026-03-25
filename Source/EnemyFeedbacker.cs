@@ -123,6 +123,20 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     _enemyType = EnemyType.V2Second;
                 }
             }
+
+            var rodent = GetComponent<CancerousRodent>();
+
+            if (rodent != null)
+            {
+                if (rodent.harmless)
+                {
+                    _enemyType = EnemyType.CancerousRodent;
+                }
+                else
+                {
+                    _enemyType = EnemyType.VeryCancerousRodent;
+                }
+            }
         }
 
         protected void Update()
