@@ -6,6 +6,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 {
     public static class Options
     {
+        public static ConfigEntry<bool> LogDebugInfo = null;
+
         public static ConfigEntry<bool> HitstopOnEnemyParry = null;
         public static ConfigEntry<bool> ParryFollowsEnemy = null;
         public static ConfigEntry<float> EnemyParryDelay = null;
@@ -53,6 +55,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             MinParryCooldownScalar = Config.Bind($"Balance", "MinParryCooldownScalar", 1.0f);
             StaminaRechargeRateScalar = Config.Bind($"Balance", "StaminaRechargeRateScalar", 1.0f);
             StaminaCostScalar = Config.Bind($"Balance", "StaminaCostScalar", 1.0f);
+
+            LogDebugInfo = Config.Bind("Diagnostics", "LogDebug", false);
              
             foreach (var enumVal in Enum.GetValues(typeof(EnemyType)))
             {

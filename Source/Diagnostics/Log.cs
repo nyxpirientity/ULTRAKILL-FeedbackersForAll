@@ -38,7 +38,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         public static void Debug(object data)
         {
-            _logger.LogDebug(data);
+            if (Options.LogDebugInfo.Value)
+            {
+                _logger.LogDebug(data);
+            }
         }
 
         private static ManualLogSource _logger = null;
