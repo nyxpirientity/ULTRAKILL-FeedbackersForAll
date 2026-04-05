@@ -81,6 +81,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     eid = eidid.eid;
                 }
 
+                if (eid == null)
+                {
+                    return;
+                }
+
                 var enemy = eid.GetComponent<EnemyComponents>();
 
                 Assert.IsNotNull(enemy);
