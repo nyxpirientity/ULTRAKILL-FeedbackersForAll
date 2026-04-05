@@ -62,7 +62,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             return parryability;
         }
 
-        private static void OnSceneLoad(Scene sceneIdx, string sceneName)
+        private static void OnSceneLoad(Scene sceneIdx, string levelName, string unitySceneName)
         {
             _attackParryabilitysDict.Clear();
             _parryabilitys.Clear();
