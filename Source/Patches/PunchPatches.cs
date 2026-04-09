@@ -33,7 +33,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                         if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Projectile || boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.HomingProjectile)
                         {
-                            StyleHUD.Instance.AddPoints(125, "<color=#26ff00>PRO PARRY PONG</color>");
+                            StyleHUD.Instance.AddPoints(125, "<color=#00f2ff>PRO PARRY PONG</color>");
                         }
                     }
                     
