@@ -61,6 +61,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     StyleHUD.Instance.AddPoints(200, "<color=#ffd000>KEEP THE CHANGE</color>");
                     boostTracker.DebugPrintInfo();
                 }
+
+                if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Projectile || boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.HomingProjectile)
+                {
+                    StyleHUD.Instance.AddPoints(600, "<color=#c165ff>I INSIST</color>");
+                }
             };
 
             EnemyIdentifierIdentifier eidid = null;
