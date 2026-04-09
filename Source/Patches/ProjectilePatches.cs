@@ -62,7 +62,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     boostTracker.DebugPrintInfo();
                 }
 
-                if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Projectile || boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.HomingProjectile)
+                if ((boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Projectile || boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.HomingProjectile) && boostTracker.NumPlayerBoosts > 0 && boostTracker.NumEnemyBoosts > 0)
                 {
                     StyleHUD.Instance.AddPoints(600, "<color=#c165ff>I INSIST</color>");
                 }
