@@ -7,10 +7,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
     {
         internal static void Initialize()
         {
-            PlayerPunchEvents.PreParryProjectile += PreParryProjectile;
+            PlayerPunchEvents.PostParryProjectile += PostParryProjectile;
         }
 
-        private static void PreParryProjectile(EventMethodCanceler canceler, Punch punch, Projectile proj)
+        private static void PostParryProjectile(EventMethodCancelInfo canceler, Punch punch, Projectile proj)
         {
             if (NyxLib.Cheats.Enabled)
             {

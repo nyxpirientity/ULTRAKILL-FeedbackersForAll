@@ -82,7 +82,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 return;
             }
-
+            
             NumPlayerBoosts += 1;
             
             LastBoostedByPlayer = true;
@@ -92,7 +92,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             _creationProgressTime.UpdateToNow();
 
             SafeEid = null;      
-                  
+                              
             if (NumEnemyBoosts == 0)
             {
                 return;
@@ -156,6 +156,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 return;
             }
+
+            TryCacheComps();
+
+            MaybeEnforceOurExplosionPrefab();
             
             if (_proj != null)
             {
@@ -169,13 +173,16 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     _explosion.ExplosionSpeedScale += 0.5f;
                     _explosion.ExplosionDamageScale += 0.25f;
                     _explosion.ExplosionEnemyDamageMultiplierScale += 0.75f;
+                    DebugPrintInfo();
                 }
                 else
                 {
                     Log.Debug("Oomph boosting for projectile not so bigly");
                     MakeExplosiveAndExplosionUnique();
                     _proj.enemyDamageMultiplier *= 1.5f;
+                    _explosion.ExplosionEnemyDamageMultiplierScale += 0.75f;
                     _proj.damage *= 1.1f;
+                    DebugPrintInfo();
                 }
             }
             else if (_cannonball != null)
@@ -195,6 +202,17 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     MakeExplosiveAndExplosionUnique();
                     _cannonball.damage *= 1.4f;
                 }
+            }
+
+            TrySetFirstSeenDamage();
+            UpdateLastSeenDamage();
+        }
+
+        private void UpdateLastSeenDamage()
+        {
+            if (_proj != null)
+            {
+                _lastSeenDamage = _proj.damage;
             }
         }
 
@@ -226,6 +244,22 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             _creationProgressTime.UpdateToNow();
             MaybeEnforceOurExplosionPrefab();
+            UpdateLastSeenDamage();
+            TrySetFirstSeenDamage();
+        }
+
+        private void TrySetFirstSeenDamage()
+        {
+            if (_firstSeenDamage.HasValue)
+            {
+                return;
+            }
+
+            if (_proj != null)
+            {
+                _firstSeenDamage = _proj.damage;
+                _firstSeenEnemyMultiplier = _proj.enemyDamageMultiplier;
+            }
         }
 
         private void TrySolveType()
@@ -333,14 +367,19 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
             else
             {
-                if (TryGetComponent(out Cannonball cannonball))
-                {
-                    _cannonball = cannonball;
-                }
-                else if (TryGetComponent(out Projectile proj))
-                {
-                    _proj = proj;
-                }
+                TryCacheComps();
+            }
+        }
+
+        private void TryCacheComps()
+        {
+            if (TryGetComponent(out Cannonball cannonball))
+            {
+                _cannonball = cannonball;
+            }
+            else if (TryGetComponent(out Projectile proj))
+            {
+                _proj = proj;
             }
         }
 
@@ -557,7 +596,35 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             if (_explosion != null)
             {
                 _explosion.ForceElectric = Electric;
+                _explosion.BaseDamageOverride = _firstSeenDamage;
+                _explosion.ExplosionEnemyDamageMultiplierScale *= _firstSeenEnemyMultiplier.GetValueOrDefault(1.0f);
             }
+        }
+
+        internal void DebugPrintInfo()
+        {
+            string printStr = $"{name} Debug Info!:";
+            if (_proj != null)
+            {
+                var expadd = _proj.explosionEffect.GetComponentInChildren<ExplosionAdditions>();
+                printStr += $"\nactive type: projectile";
+                printStr += $"\noverall type: {ProjectileType}";
+                printStr += $"\nprojDamage: {_proj.damage}";
+                printStr += $"\n_firstSeenDamage: {_firstSeenDamage}";
+                printStr += $"\nprojEnemyDamageMult: {_proj.enemyDamageMultiplier}";
+                printStr += $"\nexplosionBaseDamageOverride: {_explosion?.BaseDamageOverride}";
+                printStr += $"\nexplosionDamageScale: {_explosion?.ExplosionDamageScale}";
+                printStr += $"\nExplosionEnemyDamageMultiplierScale: {_explosion?.ExplosionEnemyDamageMultiplierScale}";
+                printStr += $"\n_explosion is _proj.explosionEffect:[ExplosionAdditionsComp]: {_explosion == expadd}";
+                printStr += $"\n_explosion is null: {_explosion is null}";
+                printStr += $"\n_proj.explosionEffect:[ExplosionAdditionsComp] is null: {expadd is null}";
+            }
+            else
+            {
+                printStr += $"\nno info setup :c";
+            }
+
+            Log.Debug(printStr);
         }
 
         [SerializeField] private uint _numPlayerBoosts = 0;
@@ -578,5 +645,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         private GameObject _prefabHolder = null;
         [SerializeField] private bool _canBeEnemyParried = true;
         private Nail _nail;
+        private float? _firstSeenDamage = null;
+        private float? _firstSeenEnemyMultiplier = null;
+        private float _lastSeenDamage = 0.0f;
     }
 }

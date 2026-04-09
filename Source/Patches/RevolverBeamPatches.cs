@@ -109,7 +109,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     //counterBeam.safeEnemyType = enemy.Eid.enemyType;
                     counterBeam.playerBullet = true;
                     counterBeam.damage = revBeamDmg * 25.0f;
-                    counterBeam.enemyDamageMultiplier = 3.0f / 25.0f;
+                    counterBeam.enemyDamageMultiplier = 5.0f / 25.0f;
                 });
 
                 revolverBeam.fake = true;
@@ -195,8 +195,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 
                 feedbacker.ParryEffect(hit.point);
 
-                float revBeamDmg = revolverBeam.damage * 3;
-
+                float revBeamDmg = (revolverBeam.damage + revolverBeam.addedDamage) * revolverBeam.maxHitsPerTarget;
+                
                 var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
                 var counterBeam = counterBeamGo.GetComponent<Projectile>();
                 var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
@@ -204,7 +204,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 feedbacker.QueueParry((offset) => 
                 {
-                    counterBeamBoostTracker.IncrementEnemyBoost();
+                    counterBeam.damage = revBeamDmg * 4.0f;
                     counterBeamGo.transform.position = hit.point + offset;
                     feedbacker.ParryFinishEffect(hit.point + offset);
                     var parryForce = feedbacker.SolveParryForce(hit.point + offset, (counterBeam.transform.rotation * Vector3.forward) * counterBeam.speed);
@@ -217,7 +217,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                     //counterBeam.safeEnemyType = enemy.Eid.enemyType;
                     counterBeam.playerBullet = true;
-                    counterBeam.damage = revBeamDmg * 5.0f;
+                    counterBeamBoostTracker.IncrementEnemyBoost();
                     counterBeam.enemyDamageMultiplier = 1.0f / 5.0f;
                 });
 
