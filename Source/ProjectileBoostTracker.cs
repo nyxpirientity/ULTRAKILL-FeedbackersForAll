@@ -112,7 +112,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             IgnoreColliders = new Collider[]{};
             
-            if (NumPlayerBoosts > 1 || NumEnemyBoosts >= 1)
+            if (NumEnemyBoosts >= 1)
             {
                 BoostOomph(true);
             }
@@ -174,7 +174,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     Log.Debug("Oomph boosting for projectile not so bigly");
                     MakeExplosiveAndExplosionUnique();
-                    _proj.enemyDamageMultiplier *= 1.3f;
+                    _proj.enemyDamageMultiplier *= 1.5f;
                     _proj.damage *= 1.1f;
                 }
             }
@@ -193,7 +193,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     Log.Debug("Oomph boosting for not so bigly");
                     MakeExplosiveAndExplosionUnique();
-                    _cannonball.damage *= 1.1f;
+                    _cannonball.damage *= 1.4f;
                 }
             }
         }

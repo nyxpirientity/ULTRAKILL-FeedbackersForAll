@@ -10,7 +10,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 {
     public static class CoinPatches
     {
-        const float EnemyParriedCoinDamageScale = 3.0f; // TODO: make configurable
+        const float EnemyParriedCoinDamageScale = 4.0f; // TODO: make configurable
 
         internal static void Initialize()
         {
@@ -105,7 +105,6 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 counterBeam.GetComponentInChildren<MeshFilter>().mesh = coinMeshF.mesh;
                 counterBeam.GetComponentInChildren<MeshRenderer>().material = coinMeshR.material;
                 counterBeamBoostTracker.CopyFrom(boostTracker);
-                counterBeamBoostTracker.IncrementEnemyBoost();
                 float coinPower = coin.power;
                 
                 feedbacker.QueueParry((offset) =>
@@ -115,6 +114,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     counterBeamGo.transform.position = hitPoint + offset;
                     counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
                     counterBeamGo.SetActive(true);
+                    counterBeamBoostTracker.IncrementEnemyBoost();
                     
                     var colliders = enemy.Colliders;
                     counterBeamBoostTracker.IgnoreColliders = colliders;
@@ -240,7 +240,6 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 counterBeam.GetComponentInChildren<MeshFilter>().mesh = coinMeshF.mesh;
                 counterBeam.GetComponentInChildren<MeshRenderer>().material = coinMeshR.material;
                 counterBeamBoostTracker.CopyFrom(boostTracker);
-                counterBeamBoostTracker.IncrementEnemyBoost();
 
                 feedbacker.QueueParry((offset) =>
                 {
@@ -250,6 +249,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
 
                     counterBeamGo.SetActive(true);
+                    counterBeamBoostTracker.IncrementEnemyBoost();
                     
                     var colliders = enemy.Colliders;
                     counterBeamBoostTracker.IgnoreColliders = colliders;
