@@ -26,7 +26,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                     if (boostTracker.NumEnemyBoosts > 0 && (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.RevolverBeam || boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.PlayerProjectile))
                     {
-                        StyleHUD.Instance.AddPoints(10, "<color=#26ff00>PARRY PONG</color>");
+                        StyleHUD.Instance.AddPoints(75, "<color=#26ff00>PARRY PONG</color>");
                     }
                 }
             }

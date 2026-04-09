@@ -58,7 +58,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Coin && boostTracker.NumPlayerBoosts > 0 && boostTracker.NumEnemyBoosts > 0)
                 {
-                    StyleHUD.Instance.AddPoints(10, "<color=#ffd000>KEEP THE CHANGE</color>");
+                    StyleHUD.Instance.AddPoints(200, "<color=#ffd000>KEEP THE CHANGE</color>");
                 }
             };
 

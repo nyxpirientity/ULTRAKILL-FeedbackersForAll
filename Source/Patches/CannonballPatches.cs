@@ -38,7 +38,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 if (boostTracker.NumPlayerBoosts > 0 && boostTracker.NumEnemyBoosts > 0)
                 {
-                    StyleHUD.Instance.AddPoints(10, "<color=#00c3ff>VOLLEYBALL</color>");
+                    StyleHUD.Instance.AddPoints(150, "<color=#00c3ff>VOLLEYBALL</color>");
                 }
             };
 
