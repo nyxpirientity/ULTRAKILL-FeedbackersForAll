@@ -10,6 +10,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 {
     public static class CoinPatches
     {
+        const float EnemyParriedCoinDamageScale = 3.0f; // TODO: make configurable
+
         internal static void Initialize()
         {
             CoinEvents.PostCoinAwake += PostCoinAwake;
@@ -121,7 +123,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     counterBeamBoostTracker.SetTempSafeEnemyType(enemy.Eid.enemyType);
                     counterBeam.playerBullet = true;
                     counterBeam.damage = coinPower * 5.0f;
-                    counterBeam.enemyDamageMultiplier = 1.0f / 5.0f;
+                    counterBeam.enemyDamageMultiplier = (1.0f / 5.0f) * EnemyParriedCoinDamageScale;
                 });
 
                 UnityEngine.Object.Destroy(coin.gameObject);
@@ -257,7 +259,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     counterBeam.playerBullet = true;
                     counterBeam.damage = coinPower * 5.0f;
                     counterBeamBoostTracker.SetTempSafeEnemyType(enemy.Eid.enemyType);
-                    counterBeam.enemyDamageMultiplier = 1.0f / 5.0f;
+                    counterBeam.enemyDamageMultiplier = (1.0f / 5.0f) * EnemyParriedCoinDamageScale;
                 });
 
                 coin.GetDeleted();

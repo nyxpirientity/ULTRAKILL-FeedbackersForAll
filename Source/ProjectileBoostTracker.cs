@@ -163,7 +163,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     Log.Debug("Oomph boosting for projectile bigly");
                     MakeExplosiveAndExplosionUnique();
-                    _proj.enemyDamageMultiplier *= 2.0f;
+                    _proj.enemyDamageMultiplier *= 2.25f;
                     _proj.damage *= 1.2f;
                     _explosion.ExplosionScale += 0.5f;
                     _explosion.ExplosionSpeedScale += 0.5f;
@@ -174,7 +174,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     Log.Debug("Oomph boosting for projectile not so bigly");
                     MakeExplosiveAndExplosionUnique();
-                    _proj.enemyDamageMultiplier *= 1.2f;
+                    _proj.enemyDamageMultiplier *= 1.3f;
                     _proj.damage *= 1.1f;
                 }
             }
@@ -184,7 +184,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     Log.Debug("Oomph boosting for cannonball bigly");
                     MakeExplosiveAndExplosionUnique();
-                    _cannonball.damage *= 2.0f;
+                    _cannonball.damage *= 2.5f;
                     _explosion.ExplosionScale *= 1.5f;
                     _explosion.ExplosionSpeedScale *= 1.5f;
                     _explosion.ExplosionDamageScale += 0.1f;
