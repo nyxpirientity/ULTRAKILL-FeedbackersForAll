@@ -27,6 +27,19 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         
         public ProjectileCategory ProjectileType { get => _projectileType; private set => _projectileType = value; }
 
+        public int TimesRicocheted 
+        { 
+            get
+            {
+                if (_revBeam != null)
+                {
+                    return _startingRicoAmount - _revBeam.ricochetAmount;
+                }
+
+                return 0;
+            }
+        }
+
         private Cannonball _cannonball;
         public EnemyIdentifier SafeEid = null;
         public bool Electric = false;
@@ -106,6 +119,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 if (NumBoosts == 1 && !_proj.friendly)
                 {
                     _creationStartTime.UpdateToNow();
+                    DebugPrintCreationStartTime();
                     _startParryabilityDist = ParryabilityTracker.NotifyCreationStart(GetHashCode());
                 }
             }
@@ -118,6 +132,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
 
             Log.Debug($"IncrementPlayerBoosts called for ProjectileBoostTracker {this}");
+        }
+
+        private void DebugPrintCreationStartTime()
+        {
+            Log.Debug($"{this}_creationStartTime updated, Timestamp is {_creationStartTime.TimeStamp}");
         }
 
         public void IncrementEnemyBoost()
@@ -173,7 +192,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     _explosion.ExplosionSpeedScale += 0.5f;
                     _explosion.ExplosionDamageScale += 0.25f;
                     _explosion.ExplosionEnemyDamageMultiplierScale += 0.75f;
-                    DebugPrintInfo();
+                    DebugPrintInfo("oomph boost big");
                 }
                 else
                 {
@@ -182,7 +201,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     _proj.enemyDamageMultiplier *= 1.5f;
                     _explosion.ExplosionEnemyDamageMultiplierScale += 0.75f;
                     _proj.damage *= 1.1f;
-                    DebugPrintInfo();
+                    DebugPrintInfo("oomph boost not big");
                 }
             }
             else if (_cannonball != null)
@@ -220,11 +239,15 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         {
             _colliders = GetComponentsInChildren<Collider>();
 
+            _creationProgressTime.UpdateToNow();
             if (ProjectileType == ProjectileCategory.Null)
             {
                 _creationStartTime.UpdateToNow();
-                _creationProgressTime.UpdateToNow();
+                DebugPrintCreationStartTime();
             }
+
+            TryCacheComps();
+            StoreStartedRicochetAmount();
 
             // revolver beam changes this
             /*try 
@@ -246,6 +269,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             MaybeEnforceOurExplosionPrefab();
             UpdateLastSeenDamage();
             TrySetFirstSeenDamage();
+        }
+
+        private void StoreStartedRicochetAmount()
+        {
+            if (_revBeam != null && _startingRicoAmount == -1)
+            {
+                _startingRicoAmount = _revBeam.ricochetAmount;
+            }
         }
 
         private void TrySetFirstSeenDamage()
@@ -328,6 +359,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                             ProjectileType = ProjectileCategory.RevolverBeam;
                         }
                     }
+                    
+                    _revBeam = revolverBeam;
 
                     if (revolverBeam.attributes.Contains(HitterAttribute.Electricity))
                     {
@@ -364,6 +397,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 _startParryabilityDist = ParryabilityTracker.NotifyCreationStart(GetHashCode());
                 _creationStartTime.UpdateToNow();
+                DebugPrintCreationStartTime();
             }
             else
             {
@@ -380,6 +414,14 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             else if (TryGetComponent(out Projectile proj))
             {
                 _proj = proj;
+            }
+            else if (TryGetComponent(out RevolverBeam revBeam))
+            {
+                _revBeam = revBeam;
+            }
+            else if (TryGetComponent(out Nail nail))
+            {
+                _nail = nail;
             }
         }
 
@@ -441,6 +483,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             var contactDiffDist = ParryabilityTracker.NotifyContact(GetHashCode());
 
+
+            if (_creationStartTime.TimeStamp <= 0.001)
+            {
+                _creationStartTime.UpdateToNow();
+                Log.Debug($"{name}: Creation start time had to be updated by NotifyContact");
+            }
+
             double window = Math.Max(Math.Max(0.4 + (_creationStartTime.TimeSince * 0.25), 0.3 + (_creationProgressTime.TimeSince * 0.5)), 0.75);
 
             double creationDist = _creationProgressParryabilityDist;
@@ -478,7 +527,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             byte boostByte = (byte)(playerBoostByte ^ enemyBoostByte);
 
             //MelonLogger.Msg($"TEST PRINT FOR ProjectileBoostTracker.GetHashCode\nplayerBoostByte:{Convert.ToString(playerBoostByte, toBase: 2)}\nenemyBoostByte:{Convert.ToString(enemyBoostByte, toBase: 2)}\nboostByte:{Convert.ToString(boostByte, toBase: 2)}");
-            return BitConverter.ToInt32(new byte[] { boostByte, (byte)ProjectileType, 0, 0}, 0);
+            return BitConverter.ToInt32(new byte[] { boostByte, (byte)ProjectileType, (byte)TimesRicocheted, 0}, 0);
         }
 
         public void CopyFrom(ProjectileBoostTracker other)
@@ -490,6 +539,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             _startParryabilityDist = other._startParryabilityDist;
             _creationProgressTime = other._creationProgressTime;
             _creationStartTime = other._creationStartTime;
+            _startingRicoAmount = other._startingRicoAmount;
             Electric = other.Electric;
 
             if (other._explosiveAndExplosionUnique)
@@ -601,9 +651,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
         }
 
-        internal void DebugPrintInfo()
+        internal void DebugPrintInfo(string reason = "no reason specified")
         {
-            string printStr = $"{name} Debug Info!:";
+            string printStr = $"{name} Debug Info! (because {reason}):";
             if (_proj != null)
             {
                 var expadd = _proj.explosionEffect.GetComponentInChildren<ExplosionAdditions>();
@@ -619,10 +669,22 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 printStr += $"\n_explosion is null: {_explosion is null}";
                 printStr += $"\n_proj.explosionEffect:[ExplosionAdditionsComp] is null: {expadd is null}";
             }
+            else if (_revBeam != null)
+            {
+                printStr += $"\nactive type: revolver beam";
+                printStr += $"\noverall type: {ProjectileType}";
+                printStr += $"\nTimesRicocheted: {TimesRicocheted}";
+                printStr += $"\nstarting ricochet amount: {_startingRicoAmount}";
+            }
             else
             {
-                printStr += $"\nno info setup :c";
+                printStr += $"\nno specific info setup :c";
             }
+
+            printStr += $"\ntimeSinceCreation: {_creationStartTime.TimeSince}";
+            printStr += $"\ncreationTimestamp: {_creationStartTime.TimeStamp}";
+            printStr += $"\ntimeSinceCreationProgress: {_creationProgressTime.TimeSince}";
+            printStr += $"\ncreationProgressTimestamp: {_creationProgressTime.TimeStamp}";
 
             Log.Debug(printStr);
         }
@@ -634,8 +696,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         private static FieldInfo _cballInterruptionExplosionFi = AccessTools.Field(typeof(Cannonball), "interruptionExplosion");
         [SerializeField] private double _startParryabilityDist = double.PositiveInfinity;
         [SerializeField] private double _creationProgressParryabilityDist = double.PositiveInfinity;
-        private FixedTimeStamp _creationStartTime = new FixedTimeStamp();
-        private FixedTimeStamp _creationProgressTime = new FixedTimeStamp();
+        [SerializeField] private FixedTimeStamp _creationStartTime;
+        [SerializeField] private FixedTimeStamp _creationProgressTime;
         private Collider[] _ignoreColliders = new Collider[0];
         private Collider[] _colliders = null;
         private Projectile _proj;
@@ -648,5 +710,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         private float? _firstSeenDamage = null;
         private float? _firstSeenEnemyMultiplier = null;
         private float _lastSeenDamage = 0.0f;
+        private RevolverBeam _revBeam;
+        [SerializeField] private int _startingRicoAmount = -1;
     }
 }

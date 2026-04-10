@@ -92,6 +92,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
                 var counterBeam = counterBeamGo.GetComponent<Projectile>();
                 var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
+                boostTracker.DebugPrintInfo("revBeam getting parried");
                 counterBeamBoostTracker.CopyFrom(boostTracker);
                 
                 feedbacker.QueueParry((offset) => 
@@ -201,6 +202,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 var counterBeam = counterBeamGo.GetComponent<Projectile>();
                 var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
                 counterBeamBoostTracker.CopyFrom(boostTracker);
+                boostTracker.DebugPrintInfo("revBeam getting parried");
 
                 feedbacker.QueueParry((offset) => 
                 {

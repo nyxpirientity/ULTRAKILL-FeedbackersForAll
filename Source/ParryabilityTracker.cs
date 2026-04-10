@@ -196,7 +196,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                             continue;
                         }
                  
-                        lastDiff = (lastTimestamp.Value.TimeStamp - timestamp.TimeStamp).Value;
+                        lastDiff = (lastTimestamp.Value.TimeStamp - timestamp.TimeStamp);
 
                         firstDiff ??= lastDiff;   
 
