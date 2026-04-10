@@ -483,7 +483,6 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             var contactDiffDist = ParryabilityTracker.NotifyContact(GetHashCode());
 
-
             if (_creationStartTime.TimeStamp <= 0.001)
             {
                 _creationStartTime.UpdateToNow();

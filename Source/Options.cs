@@ -21,6 +21,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         public static Dictionary<EnemyType, ConfigEntry<double>> FirstHitParrySkills = new Dictionary<EnemyType, ConfigEntry<double>>(64);
         public static Dictionary<EnemyType, ConfigEntry<double>> MultiHitParrySkills = new Dictionary<EnemyType, ConfigEntry<double>>(64);
 
+        public static ConfigEntry<int> ParryabilityMemory = null;
+
         public static ConfigEntry<float> FirstHitSkillScalar = null;
         public static ConfigEntry<float> MultiHitSkillScalar = null;
         public static ConfigEntry<float> MinParryCooldownScalar = null;
@@ -55,6 +57,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             MinParryCooldownScalar = Config.Bind($"Balance", "MinParryCooldownScalar", 1.0f);
             StaminaRechargeRateScalar = Config.Bind($"Balance", "StaminaRechargeRateScalar", 1.0f);
             StaminaCostScalar = Config.Bind($"Balance", "StaminaCostScalar", 1.0f);
+            ParryabilityMemory = Config.Bind($"Balance", "ParryabilityMemory", 5);
 
             LogDebugInfo = Config.Bind("Diagnostics", "LogDebug", false);
              

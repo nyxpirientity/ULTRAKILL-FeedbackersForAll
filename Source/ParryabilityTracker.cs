@@ -73,7 +73,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         private class ParryabilityInfo
         {
-            public static int QueueCap { get => 10; }
+            public static int QueueCap { get => Options.ParryabilityMemory.Value; }
 
             public double NotifyContact()
             {
