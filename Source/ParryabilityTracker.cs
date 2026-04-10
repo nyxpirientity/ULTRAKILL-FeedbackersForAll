@@ -121,7 +121,18 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             private struct TimestampsQueue
             {
-                public float BestDiffDist { get; private set; }
+                public float BestDiffDist 
+                { 
+                    get
+                    {
+                        if (_bestDiffDistDirty)
+                        {
+                            UpdateBestDiffDist();
+                        }
+                        return _bestDiffDist;
+                    } 
+                }
+                private float _bestDiffDist;
                 public static double MaxDecayTime { get => 20.0; }
 
                 internal bool CanPeek
@@ -168,25 +179,32 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     _queue.Enqueue(timestamp);
                     _decayTimestamp.UpdateToNow();
                     UpdateDecayTime();
-                    UpdateBestDiffDist();
+                    MarkBestDiffDistDirty();
                     _LastEnqueueTimestamp.UpdateToNow();
+                }
+
+                private void MarkBestDiffDistDirty()
+                {
+                    _bestDiffDistDirty = true;
                 }
 
                 private void UpdateBestDiffDist()
                 {
+                    _bestDiffDistDirty = false;
+
                     if (_queue.Count <= 2)
                     {
-                        BestDiffDist = 10000.0f;
+                        _bestDiffDist = 10000.0f;
                         Log.Debug($"{_debugName}:ParryabilityTracker.ParryabilityInfo.TimestampsQueue.UpdateBestDiffDist ended with a BestDiffDist of {BestDiffDist} (based on queue being small)");
                         return;
                     }
-
+                    
                     double? firstDiff = null;
                     double lastDiff = 0.0;
                     double sum = 0.0;
                     _averageDiffs.Clear();
                     FixedTimeStamp? lastTimestamp = null;
-                    BestDiffDist = 0.0f;
+                    _bestDiffDist = 0.0f;
 
                     foreach (var timestamp in _queue.Reverse())
                     {
@@ -221,7 +239,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         }
                     }
 
-                    BestDiffDist = (float)lowestDist;
+                    _bestDiffDist = (float)lowestDist;
                     Log.Debug($"{_debugName}:ParryabilityTracker.ParryabilityInfo.TimestampsQueue.UpdateBestDiffDist ended with a BestDiffDist of {BestDiffDist}, and a lowestDistI of {lowestDistI}. _queue.Count: {_queue.Count}");
                 }
 
@@ -247,7 +265,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                     _decayTimestamp.UpdateToNow();
                     _queue.Dequeue();
-                    UpdateBestDiffDist();
+                    MarkBestDiffDistDirty();
                 }
 
                 private void UpdateDecayTime()
@@ -285,6 +303,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 private FixedTimeStamp _decayTimestamp;
                 private FixedTimeStamp _LastEnqueueTimestamp;
                 private float _decayTime;
+                private bool _bestDiffDistDirty;
             }
         }
     }

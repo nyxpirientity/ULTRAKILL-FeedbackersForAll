@@ -57,7 +57,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             MinParryCooldownScalar = Config.Bind($"Balance", "MinParryCooldownScalar", 1.0f);
             StaminaRechargeRateScalar = Config.Bind($"Balance", "StaminaRechargeRateScalar", 1.0f);
             StaminaCostScalar = Config.Bind($"Balance", "StaminaCostScalar", 1.0f);
-            ParryabilityMemory = Config.Bind($"Balance", "ParryabilityMemory", 5);
+            ParryabilityMemory = Config.Bind($"Balance", "ParryabilityMemory", 6);
 
             LogDebugInfo = Config.Bind("Diagnostics", "LogDebug", false);
              

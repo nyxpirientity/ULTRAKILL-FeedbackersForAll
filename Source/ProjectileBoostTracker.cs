@@ -297,11 +297,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         {
             if (ProjectileType == ProjectileCategory.Null)
             {
-                if (TryGetComponent(out Grenade grenade))
+                if (!(_grenade is null))
                 {
-                    if (grenade.enemy)
+                    if (_grenade.enemy)
                     {
-                        if (grenade.rocket)
+                        if (_grenade.rocket)
                         {
                             ProjectileType = ProjectileCategory.EnemyRocket;
                         }
@@ -312,7 +312,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     }
                     else
                     {
-                        if (grenade.rocket)
+                        if (_grenade.rocket)
                         {
                             ProjectileType = ProjectileCategory.Rocket;
                         }
@@ -322,17 +322,15 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         }
                     }
                 }
-                else if (TryGetComponent(out Projectile proj))
+                else if (!(_proj is null))
                 {
-                    _proj = proj;
-
-                    if (proj.playerBullet)
+                    if (_proj.playerBullet)
                     {
                         ProjectileType = ProjectileCategory.PlayerProjectile;
                     }
                     else
                     {
-                        if (proj.homingType == HomingType.None)
+                        if (_proj.homingType == HomingType.None)
                         {
                             ProjectileType = ProjectileCategory.Projectile;
                         }
@@ -342,15 +340,15 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         }
                     }
                 }
-                else if (TryGetComponent(out RevolverBeam revolverBeam))
+                else if (!(_revBeam is null))
                 {
-                    if (revolverBeam.previouslyHitTransform != null && revolverBeam.noMuzzleflash)
+                    if (_revBeam.previouslyHitTransform != null && _revBeam.noMuzzleflash)
                     {
                         ProjectileType = ProjectileCategory.Coin;
                     }
                     else
                     {
-                        if (revolverBeam.beamType == BeamType.Enemy || revolverBeam.beamType == BeamType.MaliciousFace)
+                        if (_revBeam.beamType == BeamType.Enemy || _revBeam.beamType == BeamType.MaliciousFace)
                         {
                             ProjectileType = ProjectileCategory.EnemyRevolverBeam;
                         }
@@ -360,29 +358,26 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         }
                     }
                     
-                    _revBeam = revolverBeam;
-
-                    if (revolverBeam.attributes.Contains(HitterAttribute.Electricity))
+                    if (_revBeam.attributes.Contains(HitterAttribute.Electricity))
                     {
                         Electric = true;
                     }
                 }
-                else if (TryGetComponent(out Coin coin))
+                else if (!(_coin is null))
                 {
                     ProjectileType = ProjectileCategory.Coin;
                 }
-                else if (TryGetComponent(out Cannonball cannonball))
+                else if (!(_cannonball is null))
                 {
                     ProjectileType = ProjectileCategory.Rocket;
-                    _cannonball = cannonball;
                 }
-                else if (TryGetComponent(out Nail nail))
+                else if (!(_nail is null))
                 {
-                    if (nail.chainsaw)
+                    if (_nail.chainsaw)
                     {
                         ProjectileType = ProjectileCategory.Saw;
                     }
-                    else if (nail.sawblade)
+                    else if (_nail.sawblade)
                     {
                         ProjectileType = ProjectileCategory.Saw;
                     }
@@ -390,8 +385,6 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     {
                         ProjectileType = ProjectileCategory.Nail;
                     }
-
-                    _nail = nail;
                 }
 
 
@@ -405,23 +398,47 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
         }
 
+        private bool _hasCachedComps = false;
         private void TryCacheComps()
         {
-            if (TryGetComponent(out Cannonball cannonball))
+            if (_hasCachedComps)
             {
-                _cannonball = cannonball;
+                return;
             }
-            else if (TryGetComponent(out Projectile proj))
+
+            _hasCachedComps = true;
+            var comps = GetComponents<MonoBehaviour>();
+            
+            _grenade = null;
+            _proj = null;
+            _revBeam = null;
+            _coin = null;
+            _cannonball = null;
+            _nail = null;
+
+            foreach (var comp in comps)
             {
-                _proj = proj;
-            }
-            else if (TryGetComponent(out RevolverBeam revBeam))
-            {
-                _revBeam = revBeam;
-            }
-            else if (TryGetComponent(out Nail nail))
-            {
-                _nail = nail;
+                switch (comp)
+                {
+                    case Grenade castedComp:
+                        _grenade = castedComp;
+                        break;
+                    case Projectile castedComp:
+                        _proj = castedComp;
+                        break;
+                    case RevolverBeam castedComp:
+                        _revBeam = castedComp;
+                        break;
+                    case Coin castedComp:
+                        _coin = castedComp;
+                        break;
+                    case Cannonball castedComp:
+                        _cannonball = castedComp;
+                        break;
+                    case Nail castedComp:
+                        _nail = castedComp;
+                        break;
+                }
             }
         }
 
@@ -699,7 +716,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         [SerializeField] private FixedTimeStamp _creationProgressTime;
         private Collider[] _ignoreColliders = new Collider[0];
         private Collider[] _colliders = null;
-        private Projectile _proj;
+        private Grenade _grenade = null;
+        private Projectile _proj = null;
+        private Coin _coin = null;
         private double _safeEnemyTypeCountDown = -1.0;
         private bool _explosiveAndExplosionUnique = false;
         private ExplosionAdditions _explosion = null;
