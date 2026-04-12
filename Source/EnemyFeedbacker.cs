@@ -33,11 +33,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         public float Stamina { get; private set; } = 0;
         public static int MonoRegistrarIndex { get; private set; }
 
-        public void QueueParry(Action<Vector3> parryAction)
+        public void QueueParry(Vector3 fromPoint, Action<Vector3> parryAction)
         {
             var initTime = new FixedTimeStamp();
             initTime.UpdateToNow();
-            _queuedParries.Add(new QueuedParry { ParryAction = parryAction, InitTime = initTime, PosAtTheTime = transform.position });
+            _queuedParries.Add(new QueuedParry { ParryAction = parryAction, InitTime = initTime, PosAtTheTime = transform.position, ParryPoint = fromPoint});
         }
 
         protected void Awake()
@@ -97,6 +97,19 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             LastParryTimestamp.UpdateToNow();
         }
 
+        public void ParryMidwayEffect(Vector3 fromPoint)
+        {
+            var sound = UnityEngine.Object.Instantiate((GameObject)timeControllerParryLightFi.GetValue(TimeScale.Controller), fromPoint, Quaternion.identity, transform);
+            var audioSource = sound.GetComponentInChildren<AudioSource>();
+            audioSource.time = 0.05f;
+            audioSource.volume *= Options.EnemyParrySoundScalar.Value * 0.5f;
+            audioSource.SetPitch(audioSource.GetPitch() * 1.25f);
+            sound.GetComponent<RemoveOnTime>().time = Options.EnemyParryDelay.Value;
+            var parryFlash = UnityEngine.Object.Instantiate(Assets.ParryFlashPrefab.ToAsset(), fromPoint, Quaternion.LookRotation((NewMovement.Instance.HeadPosition - fromPoint).normalized), Options.ParryFollowsEnemy.Value ? transform : null);
+            parryFlash.transform.localScale = new Vector3(1.0f / parryFlash.transform.lossyScale.x, 1.0f / parryFlash.transform.lossyScale.y, 1.0f / parryFlash.transform.lossyScale.z);
+            parryFlash.transform.localScale *= 2.0f;
+        }
+
         public void ParryFinishEffect(Vector3 fromPoint)
         {
             var sound = UnityEngine.Object.Instantiate((GameObject)timeControllerParryLightFi.GetValue(TimeScale.Controller), fromPoint, Quaternion.identity, transform);
@@ -151,7 +164,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 QueuedParry queuedParry = _queuedParries[i];
                 var waitTime = Options.EnemyParryDelay.Value;
-                
+                                
+                if (queuedParry.InitTime.TimeSince < waitTime * 0.5f && Options.MidwayParryEffect.Value)
+                {
+                    ParryMidwayEffect(queuedParry.ParryPoint + (Options.ParryFollowsEnemy.Value ? (transform.position - queuedParry.PosAtTheTime) : Vector3.zero));
+                    continue;
+                }
+
                 if (queuedParry.InitTime.TimeSince < waitTime)
                 {
                     continue;
@@ -199,6 +218,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             public Action<Vector3> ParryAction;
             public FixedTimeStamp InitTime;
             public Vector3 PosAtTheTime;
+            public Vector3 ParryPoint;
         }
 
         private List<QueuedParry> _queuedParries = new List<QueuedParry>(2);

@@ -114,7 +114,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 
                 grenade.gameObject.SetActive(false);
                 
-                feedbacker.QueueParry((offset) =>
+                feedbacker.QueueParry(grenade.rb.transform.position, (offset) =>
                 {
                     grenade.gameObject.SetActive(true);
                     feedbacker.ParryFinishEffect(grenade.transform.position  + offset);

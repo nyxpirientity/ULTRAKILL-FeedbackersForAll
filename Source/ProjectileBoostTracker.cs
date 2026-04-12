@@ -89,6 +89,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
         }
 
+        public Material CustomMaterial = null;
+        public Mesh CustomMesh = null;
+
         public void IncrementPlayerBoosts()
         {
             if (LastBoostedByPlayer && NumPlayerBoosts > 0)
@@ -121,6 +124,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     _creationStartTime.UpdateToNow();
                     DebugPrintCreationStartTime();
                     _startParryabilityDist = ParryabilityTracker.NotifyCreationStart(GetHashCode());
+                    _creationProgressParryabilityDist = _startParryabilityDist;
                 }
             }
 
@@ -269,6 +273,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             MaybeEnforceOurExplosionPrefab();
             UpdateLastSeenDamage();
             TrySetFirstSeenDamage();
+
+            if (_proj != null && CustomMesh != null && CustomMaterial != null)
+            {
+                GetComponentInChildren<MeshFilter>().mesh = CustomMesh;
+                GetComponentInChildren<MeshRenderer>().material = CustomMaterial;
+            }
         }
 
         private void StoreStartedRicochetAmount()
@@ -387,8 +397,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     }
                 }
 
-
                 _startParryabilityDist = ParryabilityTracker.NotifyCreationStart(GetHashCode());
+                _creationProgressParryabilityDist = _startParryabilityDist;
                 _creationStartTime.UpdateToNow();
                 DebugPrintCreationStartTime();
             }
@@ -521,7 +531,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             var parryability = Mathf.Clamp01(NyxMath.InverseNormalizeToRange((float)diffDist, (float)window / 2, (float)window));
 
-            Log.Debug($"ProjectileBoostTracker.NotifyContact called and is giving a window of {window}, a diffDist of {diffDist} and a contactDiffDist of {contactDiffDist}, resulting in a parryability of {parryability} (hash: {GetHashCode()})");
+            Log.Debug($"ProjectileBoostTracker.NotifyContact called and is giving a window of {window}, a diffDist of {diffDist} and a contactDiffDist of {contactDiffDist}, and a creationDist of {creationDist} (start: {_startParryabilityDist}, progress: {_creationProgressParryabilityDist}), resulting in a parryability of {parryability} (hash: {GetHashCode()})");
             
             return parryability;
         }

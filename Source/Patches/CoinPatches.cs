@@ -29,6 +29,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 var boostTracker = __instance.refBeam.GetOrAddComponent<ProjectileBoostTracker>();
                 boostTracker.CopyFrom(__instance.GetComponent<ProjectileBoostTracker>());
+                boostTracker.CustomMesh = __instance.GetComponent<MeshFilter>().mesh;
+                boostTracker.CustomMaterial = __instance.GetComponent<MeshRenderer>().material;
             }
         }
 
@@ -107,7 +109,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 counterBeamBoostTracker.CopyFrom(boostTracker);
                 float coinPower = coin.power;
                 
-                feedbacker.QueueParry((offset) =>
+                feedbacker.QueueParry(hitPoint, (offset) =>
                 {
                     feedbacker.ParryFinishEffect(hitPoint + offset);
                     var parryForce = feedbacker.SolveParryForce(hitPoint + offset, (counterBeam.transform.rotation * Vector3.forward) * counterBeam.speed);
@@ -241,7 +243,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 counterBeam.GetComponentInChildren<MeshRenderer>().material = coinMeshR.material;
                 counterBeamBoostTracker.CopyFrom(boostTracker);
 
-                feedbacker.QueueParry((offset) =>
+                feedbacker.QueueParry(hitPoint, (offset) =>
                 {
                     feedbacker.ParryFinishEffect(hitPoint + offset);
                     var parryForce = feedbacker.SolveParryForce(hitPoint + offset, (counterBeam.transform.rotation * Vector3.forward) * counterBeam.speed);

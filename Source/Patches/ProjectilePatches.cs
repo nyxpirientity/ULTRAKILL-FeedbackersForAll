@@ -174,7 +174,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 feedbacker.ParryEffect(projectile.transform.position);
                 projectile.gameObject.SetActive(false);
-                feedbacker.QueueParry((offset) => 
+                feedbacker.QueueParry(projectile.transform.position, (offset) => 
                 {
                     feedbacker.ParryFinishEffect(projectile.transform.position + offset);
                     var parryForce = feedbacker.SolveParryForce(projectile.transform.position + offset, projectile.GetComponent<Rigidbody>().velocity);

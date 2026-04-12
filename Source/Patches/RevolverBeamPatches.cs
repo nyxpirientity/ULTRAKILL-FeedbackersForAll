@@ -95,7 +95,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 boostTracker.DebugPrintInfo("revBeam getting parried");
                 counterBeamBoostTracker.CopyFrom(boostTracker);
                 
-                feedbacker.QueueParry((offset) => 
+                feedbacker.QueueParry(hit.point, (offset) => 
                 {
                     counterBeamBoostTracker.IncrementEnemyBoost();
                     feedbacker.ParryFinishEffect(hit.point + offset);
@@ -204,7 +204,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 counterBeamBoostTracker.CopyFrom(boostTracker);
                 boostTracker.DebugPrintInfo("revBeam getting parried");
 
-                feedbacker.QueueParry((offset) => 
+                feedbacker.QueueParry(hit.point, (offset) => 
                 {
                     counterBeam.damage = revBeamDmg * 4.0f;
                     counterBeamGo.transform.position = hit.point + offset;

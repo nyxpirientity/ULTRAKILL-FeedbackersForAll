@@ -12,6 +12,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         public static ConfigEntry<bool> ParryFollowsEnemy = null;
         public static ConfigEntry<float> EnemyParryDelay = null;
         public static ConfigEntry<float> EnemyParrySoundScalar = null;
+        public static ConfigEntry<bool> MidwayParryEffect = null;
         public static ConfigEntry<string> ParryProsString = null;
 
         public static Dictionary<EnemyType, ConfigEntry<double>> ParryStaminaCost = new Dictionary<EnemyType, ConfigEntry<double>>(64);
@@ -40,9 +41,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         public static void Initialize()
         {
             HitstopOnEnemyParry = Config.Bind($"Preferences", "HitstopOnEnemyParry", false);
-            EnemyParryDelay = Config.Bind($"Balance", "EnemyParryDelay", 0.3f);
+            EnemyParryDelay = Config.Bind($"Balance", "EnemyParryDelay", 0.4f);
             ParryFollowsEnemy = Config.Bind($"Balance", "ParryFollowsEnemy", true);
-            EnemyParrySoundScalar = Config.Bind($"Preference.Audio", "EnemyParrySoundScalar", 4.0f);
+            EnemyParrySoundScalar = Config.Bind($"Preferences.Audio", "EnemyParrySoundScalar", 4.0f);
+            MidwayParryEffect = Config.Bind($"Preferences", "MidwayParryEffect", true);
 
             ShotCoinsParryable = Config.Bind($"Balance", "ShotCoinsParryable", true);
             PunchedCoinsParryable = Config.Bind($"Balance", "PunchedCoinsParryable", true);

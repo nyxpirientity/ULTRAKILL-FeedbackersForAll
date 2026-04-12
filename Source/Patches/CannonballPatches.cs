@@ -113,7 +113,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 cannonball.hitEnemies.Add(enemy.Eid);
                 float cannonballSpeed = cannonball.Rigidbody.velocity.magnitude;
                 
-                feedbacker.QueueParry((offset) =>
+                feedbacker.QueueParry(cannonball.Rigidbody.transform.position, (offset) =>
                 {
                     cannonball.Rigidbody.transform.position += offset;
                     feedbacker.ParryFinishEffect(cannonball.transform.position);
