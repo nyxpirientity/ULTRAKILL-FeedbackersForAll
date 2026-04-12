@@ -29,8 +29,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 var boostTracker = __instance.refBeam.GetOrAddComponent<ProjectileBoostTracker>();
                 boostTracker.CopyFrom(__instance.GetComponent<ProjectileBoostTracker>());
-                var coinMf = __instance.GetComponent<MeshFilter>();
-                var coinMr = __instance.GetComponent<MeshRenderer>();
+                var coinMf = __instance.GetComponentInChildren<MeshFilter>();
+                var coinMr = __instance.GetComponentInChildren<MeshRenderer>();
                 boostTracker.CustomMesh = coinMf?.mesh;
                 boostTracker.CustomMaterial = coinMr?.material;
             }
