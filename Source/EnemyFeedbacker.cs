@@ -165,7 +165,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 QueuedParry queuedParry = _queuedParries[i];
                 var waitTime = Options.EnemyParryDelay.Value;
                                 
-                if (queuedParry.InitTime.TimeSince < waitTime * 0.5f && Options.MidwayParryEffect.Value && !queuedParry.hasPlayedMidwayParry)
+                if ((queuedParry.InitTime.TimeSince > waitTime * 0.5f) && Options.MidwayParryEffect.Value && !queuedParry.hasPlayedMidwayParry)
                 {
                     ParryMidwayEffect(queuedParry.ParryPoint + (Options.ParryFollowsEnemy.Value ? (transform.position - queuedParry.PosAtTheTime) : Vector3.zero));
                     queuedParry.hasPlayedMidwayParry = true;
