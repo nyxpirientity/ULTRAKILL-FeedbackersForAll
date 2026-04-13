@@ -53,7 +53,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             
             Assert.IsNotNull(enemy);
 
-            if (!Options.SawsParryable.Value)
+            var options = Options.SawsOptions;
+
+            if (!options.CanBeParried.Value)
             {
                 return;
             }

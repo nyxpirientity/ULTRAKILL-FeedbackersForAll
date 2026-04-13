@@ -30,13 +30,20 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         public static ConfigEntry<float> StaminaRechargeRateScalar = null;
         public static ConfigEntry<float> StaminaCostScalar = null;
 
-        public static ConfigEntry<bool> ShotCoinsParryable = null;
-        public static ConfigEntry<bool> PunchedCoinsParryable = null;
-        public static ConfigEntry<bool> BeamsParryable = null;
-        public static ConfigEntry<bool> GrenadesParryable = null;
-        public static ConfigEntry<bool> PlayerProjectilesParryable = null;
-        public static ConfigEntry<bool> CannonballsParryable = null;
-        public static ConfigEntry<bool> SawsParryable = null;
+        public static ProjectileTypeOptions ShotCoinsOptions = null;
+        public static ProjectileTypeOptions PunchedCoinsOptions = null;
+        public static ProjectileTypeOptions BeamsOptions = null;
+        public static ProjectileTypeOptions RailCannonOptions = null;
+        public static ProjectileTypeOptions GrenadesOptions = null;
+        public static ProjectileTypeOptions PlayerProjectilesOptions = null;
+        public static ProjectileTypeOptions EnemyProjectilesOptions = null;
+        public static ProjectileTypeOptions CannonballsOptions = null;
+        public static ProjectileTypeOptions SawsOptions = null;
+
+        public static ConfigEntry<bool> DifferentiateRailCannonFromBeams = null;
+        public static ConfigEntry<bool> DifferentiateElectricity = null;
+        public static ConfigEntry<bool> DifferentiateCoinRicochets = null;
+        public static ConfigEntry<int> CoinRicochetDivisor = null;
 
         public static void Initialize()
         {
@@ -46,13 +53,15 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             EnemyParrySoundScalar = Config.Bind($"Preferences.Audio", "EnemyParrySoundScalar", 4.0f);
             MidwayParryEffect = Config.Bind($"Preferences", "MidwayParryEffect", true);
 
-            ShotCoinsParryable = Config.Bind($"Balance", "ShotCoinsParryable", true);
-            PunchedCoinsParryable = Config.Bind($"Balance", "PunchedCoinsParryable", true);
-            BeamsParryable = Config.Bind($"Balance", "BeamsParryable", true);
-            GrenadesParryable = Config.Bind($"Balance", "GrenadesParryable", true);
-            PlayerProjectilesParryable = Config.Bind($"Balance", "PlayerProjectilesParryable", true);
-            CannonballsParryable = Config.Bind($"Balance", "CannonballsParryable", true);
-            SawsParryable = Config.Bind($"Balance", "SawsParryable", true);
+            ShotCoinsOptions = new ProjectileTypeOptions("ShotCoins", true, 0.75f);
+            PunchedCoinsOptions = new ProjectileTypeOptions("PunchedCoins", true, 0.75f);
+            BeamsOptions = new ProjectileTypeOptions("Beams", true, 0.75f);
+            RailCannonOptions = new ProjectileTypeOptions("RailCannon", true, 0.75f);
+            GrenadesOptions = new ProjectileTypeOptions("Grenades", true, 0.75f);
+            PlayerProjectilesOptions = new ProjectileTypeOptions("PlayerProjectiles", true, 0.75f);
+            EnemyProjectilesOptions = new ProjectileTypeOptions("EnemyProjectiles", true, 0.75f);
+            CannonballsOptions = new ProjectileTypeOptions("Cannonballs", true, 0.75f);
+            SawsOptions = new ProjectileTypeOptions("Saws", true, 0.75f);
 
             FirstHitSkillScalar = Config.Bind($"Balance", "FirstHitSkillScalar", 1.0f);
             MultiHitSkillScalar = Config.Bind($"Balance", "MultiHitSkillScalar", 1.0f);
@@ -61,16 +70,42 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             StaminaCostScalar = Config.Bind($"Balance", "StaminaCostScalar", 1.0f);
             ParryabilityMemory = Config.Bind($"Balance", "ParryabilityMemory", 6);
 
+            DifferentiateElectricity = Config.Bind($"Balance", "DifferentiateElectricity", true);
+            DifferentiateRailCannonFromBeams = Config.Bind($"Balance", "DifferentiateRailCannonFromBeams", true);
+
+            DifferentiateCoinRicochets = Config.Bind($"Balance", "DifferentiateCoinRicochets", true);
+            CoinRicochetDivisor = Config.Bind($"Balance", "CoinRicochetDivisor", 3);
+
             LogDebugInfo = Config.Bind("Diagnostics", "LogDebug", false);
              
             foreach (var enumVal in Enum.GetValues(typeof(EnemyType)))
             {
-                double defaultMultiHitSkill = 0.5;
                 double defaultFirstHitSkill = 0.75;
+                double defaultMultiHitSkill = 0.5;
 
                 double defaultStaminaCost = 0.4;
                 double defaultStaminaRechargeRate = 0.175;
                 double defaultMinParryCooldown = 0.1;
+
+                Action fodderParryStats = () =>
+                {
+                    defaultFirstHitSkill = 0.5;
+                    defaultMultiHitSkill = 0.25;
+                    
+                    defaultStaminaCost = 0.5;
+                    defaultStaminaRechargeRate = 0.125;
+                    defaultMinParryCooldown = 0.1;
+                };
+
+                Action miniBossParryStats = () =>
+                {
+                    defaultFirstHitSkill = 0.5;
+                    defaultMultiHitSkill = 0.5;
+                    
+                    defaultStaminaCost = 0.425;
+                    defaultStaminaRechargeRate = 0.15;
+                    defaultMinParryCooldown = 0.1;
+                };
 
                 switch ((EnemyType)enumVal)
                 {
@@ -98,13 +133,120 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         defaultFirstHitSkill = 1.01;
                         defaultMultiHitSkill = 0.85;
                         defaultStaminaRechargeRate = 0.3f;
-                    break;
+                        break;
                     case EnemyType.VeryCancerousRodent:
                         defaultFirstHitSkill = 1.01;
                         defaultMultiHitSkill = 0.5;
                         defaultStaminaRechargeRate = 0.2f;
-                    break;
+                        break;
+                    case EnemyType.BigJohnator:
+                        break;
+                    case EnemyType.Centaur:
+                        break;
+                    case EnemyType.Cerberus:
+                        break;
+                    case EnemyType.Deathcatcher:
+                        break;
+                    case EnemyType.Drone:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.Ferryman:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.Filth:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.FleshPanopticon:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.FleshPrison:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.Gabriel:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.Geryon:
+                        break;
+                    case EnemyType.Gutterman:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.Guttertank:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.HideousMass:
+                        break;
+                    case EnemyType.Idol:
+                        break;
+                    case EnemyType.Leviathan:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.MaliciousFace:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.Mandalore:
+                        break;
+                    case EnemyType.Mannequin:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.Mindflayer:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.Minos:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.Minotaur:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.MirrorReaper:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.Power:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.Providence:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.Puppet:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.Schism:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.Sisyphus:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.Soldier:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.Stalker:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.Stray:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.Streetcleaner:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.Swordsmachine:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.Turret:
+                        miniBossParryStats();
+                        break;
+                    case EnemyType.Virtue:
+                        fodderParryStats();
+                        break;
+                    case EnemyType.Wicked:
+                        defaultFirstHitSkill = 0.75;
+                        defaultMultiHitSkill = 0.5;
+                        
+                        defaultStaminaCost = 0.4;
+                        defaultStaminaRechargeRate = 0.175;
+                        defaultMinParryCooldown = 0.1;
+                        break;
                     default:
+                        defaultStaminaCost = 0.5;
+                        defaultStaminaRechargeRate = 0.125;
                         break;
                 }
 
@@ -122,6 +264,55 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         {
         }
 
+        internal static ProjectileTypeOptions GetOptionsForType(ProjectileBoostTracker.ProjectileCategory projectileType)
+        {
+            switch (projectileType)
+            {
+                case ProjectileBoostTracker.ProjectileCategory.Null:
+                    return null;
+                case ProjectileBoostTracker.ProjectileCategory.RevolverBeam:
+                    return BeamsOptions;
+                case ProjectileBoostTracker.ProjectileCategory.EnemyRevolverBeam:
+                    return EnemyProjectilesOptions;
+                case ProjectileBoostTracker.ProjectileCategory.PlayerProjectile:
+                    return PlayerProjectilesOptions;
+                case ProjectileBoostTracker.ProjectileCategory.Projectile:
+                    return EnemyProjectilesOptions;
+                case ProjectileBoostTracker.ProjectileCategory.HomingProjectile:
+                    return EnemyProjectilesOptions;
+                case ProjectileBoostTracker.ProjectileCategory.Rocket:
+                    return GrenadesOptions;
+                case ProjectileBoostTracker.ProjectileCategory.Grenade:
+                    return GrenadesOptions;
+                case ProjectileBoostTracker.ProjectileCategory.EnemyRocket:
+                    return GrenadesOptions;
+                case ProjectileBoostTracker.ProjectileCategory.EnemyGrenade:
+                    return GrenadesOptions;
+                case ProjectileBoostTracker.ProjectileCategory.Coin:
+                    return ShotCoinsOptions;
+                case ProjectileBoostTracker.ProjectileCategory.Nail:
+                    return SawsOptions;
+                case ProjectileBoostTracker.ProjectileCategory.Saw:
+                    return SawsOptions;
+                case ProjectileBoostTracker.ProjectileCategory.RailCannon:
+                    return RailCannonOptions;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
         internal static ConfigFile Config = null;
+
+        public class ProjectileTypeOptions
+        {
+            public ProjectileTypeOptions(string name, bool parryable, float minimumParryWindow)
+            {
+                CanBeParried = Config.Bind($"Balance.{name}", "Parryable", parryable);
+                MinimumParryWindow = Config.Bind($"Balance.{name}", "MinimumParryabilityWindow", minimumParryWindow, "projectiles become more parryable the longer they exist via an increasing parryability window, this sets the minimum, especially relevant for hitscan attacks. larger numbers means more frequent parries.");
+            }
+
+            public ConfigEntry<bool> CanBeParried = null;
+            public ConfigEntry<float> MinimumParryWindow = null;
+        }
     }
 }

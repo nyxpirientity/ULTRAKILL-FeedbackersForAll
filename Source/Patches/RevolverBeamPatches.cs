@@ -32,7 +32,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return;
             }
 
-            if (!Options.BeamsParryable.Value)
+            var options = Options.BeamsOptions;
+
+            if (!options.CanBeParried.Value)
             {
                 return;
             }
@@ -44,12 +46,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             var boostTracker = revolverBeam.GetComponent<ProjectileBoostTracker>();
 
-            if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Coin && !Options.ShotCoinsParryable.Value)
+            if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Coin && !Options.ShotCoinsOptions.CanBeParried.Value)
             {
                 return;
             }
             
-            if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Grenade && !Options.GrenadesParryable.Value)
+            if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Grenade && !Options.GrenadesOptions.CanBeParried.Value)
             {
                 return;
             }
@@ -128,7 +130,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return;
             }
 
-            if (!Options.BeamsParryable.Value)
+            var options = Options.BeamsOptions;
+
+            if (!options.CanBeParried.Value)
             {
                 return;
             }
@@ -147,7 +151,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             var boostTracker = revolverBeam.GetComponent<ProjectileBoostTracker>();
 
-            if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Coin && !Options.ShotCoinsParryable.Value)
+            if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Coin && !Options.ShotCoinsOptions.CanBeParried.Value)
             {
                 return;
             }

@@ -29,6 +29,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 var boostTracker = __instance.refBeam.GetOrAddComponent<ProjectileBoostTracker>();
                 boostTracker.CopyFrom(__instance.GetComponent<ProjectileBoostTracker>());
+                boostTracker.CoinRicochets += __instance.ricochets + 1;
                 var coinMf = __instance.GetComponentInChildren<MeshFilter>();
                 var coinMr = __instance.GetComponentInChildren<MeshRenderer>();
                 boostTracker.CustomMesh = coinMf?.mesh;
@@ -39,6 +40,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         [HarmonyPatch(typeof(Coin), nameof(Coin.ReflectRevolver))]
         static class CoinReflectRevolverPatch
         {
+            private static FieldInfo altBeamFi = AccessTools.Field(typeof(Coin), "altBeam");
             private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
 
             static void DeliverDamageReplacement(EnemyIdentifier eid, GameObject target, Vector3 force, Vector3 hitPoint, float multiplier, bool tryForExplode, float critMultiplier = 0f, GameObject sourceWeapon = null, bool ignoreTotalDamageTakenMultiplier = false, bool fromExplosion = false)
@@ -50,7 +52,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     eid.DeliverDamage(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);  
                 };
                 
-                if (!Options.ShotCoinsParryable.Value)
+                var options = Options.ShotCoinsOptions;
+
+                if (!options.CanBeParried.Value)
                 {
                     deliverThatDamage();
                     return;
@@ -65,6 +69,18 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 var coin = _currentCoin;
 
                 var boostTracker = coin.GetComponent<ProjectileBoostTracker>();
+
+                boostTracker.CoinRicochets += coin.ricochets + 1;
+
+                var altBeam = (GameObject)altBeamFi.GetValue(coin);
+                var altRevBeam = altBeam.GetComponentInChildren<RevolverBeam>();
+                if (altBeam != null && altRevBeam != null)
+                {
+                    if (altRevBeam.attributes.Contains(HitterAttribute.Electricity))
+                    {
+                        boostTracker.Electric = true;
+                    }
+                }
 
                 var parryability = boostTracker.NotifyContact();
 
@@ -110,7 +126,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 counterBeam.GetComponentInChildren<MeshRenderer>().material = coinMeshR.material;
                 counterBeamBoostTracker.CopyFrom(boostTracker);
                 float coinPower = coin.power;
-                
+
                 feedbacker.QueueParry(hitPoint, (offset) =>
                 {
                     feedbacker.ParryFinishEffect(hitPoint + offset);
@@ -183,7 +199,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     eid.DeliverDamage(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);  
                 };
 
-                if (!Options.PunchedCoinsParryable.Value)
+                var options = Options.PunchedCoinsOptions;
+
+                if (!options.CanBeParried.Value)
                 {
                     deliverThatDamage();
                     return;

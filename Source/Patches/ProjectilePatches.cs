@@ -35,7 +35,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             var boostTracker = projectile.GetComponent<ProjectileBoostTracker>();
 
-            if (boostTracker.IsPlayerSourced && !Options.PlayerProjectilesParryable.Value)
+            var options = Options.PlayerProjectilesOptions;
+
+            if (boostTracker.IsPlayerSourced && !options.CanBeParried.Value)
             {
                 return;
             }

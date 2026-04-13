@@ -12,7 +12,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
     {
         public enum ProjectileCategory : byte
         {
-            Null, RevolverBeam, EnemyRevolverBeam, PlayerProjectile, Projectile, HomingProjectile, Rocket, Grenade, EnemyRocket, EnemyGrenade, Coin, Nail, Saw
+            Null, RevolverBeam, RailCannon, EnemyRevolverBeam, PlayerProjectile, Projectile, HomingProjectile, Rocket, Grenade, EnemyRocket, EnemyGrenade, Coin, Nail, Saw
         }
 
         public bool HasBeenBoosted { get => NumPlayerBoosts != 0 || NumEnemyBoosts != 0; }
@@ -39,6 +39,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return 0;
             }
         }
+
+        public int CoinRicochets = 0;
 
         private Cannonball _cannonball;
         public EnemyIdentifier SafeEid = null;
@@ -192,6 +194,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     MakeExplosiveAndExplosionUnique();
                     _proj.enemyDamageMultiplier *= 2.25f;
                     _proj.damage *= 1.2f;
+                    
+                    if (Electric)
+                    {
+                        _proj.explosive = true;
+                    }
+
                     _explosion.ExplosionScale += 0.5f;
                     _explosion.ExplosionSpeedScale += 0.5f;
                     _explosion.ExplosionDamageScale += 0.25f;
@@ -251,18 +259,6 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
 
             TryCacheComps();
-            StoreStartedRicochetAmount();
-
-            // revolver beam changes this
-            /*try 
-            {
-                Assert.IsNotNull(_colliders, "Projectile without a collider? Didn't know it existed!");
-                Assert.IsFalse(_colliders.Length == 0, "Projectile without a collider? Didn't know it existed!");
-            }
-            catch (System.Exception e)
-            {
-                Log.Error($"Soft Error in ProjectileBoostTracker.Awake: {e}"); // don't want to block projectile awake and stuff if this fails
-            } */
         }
 
         protected void Start()
@@ -279,6 +275,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 GetComponentInChildren<MeshFilter>().mesh = CustomMesh;
                 GetComponentInChildren<MeshRenderer>().material = CustomMaterial;
             }
+
+            StoreStartedRicochetAmount();
         }
 
         private void StoreStartedRicochetAmount()
@@ -367,7 +365,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                             ProjectileType = ProjectileCategory.RevolverBeam;
                         }
                     }
-                    
+                
+                    if (Options.DifferentiateRailCannonFromBeams.Value && _revBeam.beamType == BeamType.Railgun)
+                    {
+                        ProjectileType = ProjectileCategory.RailCannon;
+                    }
+
                     if (_revBeam.attributes.Contains(HitterAttribute.Electricity))
                     {
                         Electric = true;
@@ -505,6 +508,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 return 0.0;
             }
+
+            //Log.Message($"{CoinRicochets}");
             
             TrySolveType();
 
@@ -516,7 +521,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 Log.Debug($"{name}: Creation start time had to be updated by NotifyContact");
             }
 
-            double window = Math.Max(Math.Max(0.4 + (_creationStartTime.TimeSince * 0.25), 0.3 + (_creationProgressTime.TimeSince * 0.5)), 0.75);
+            var options = Options.GetOptionsForType(ProjectileType);
+
+            double window = Math.Max(Math.Max(0.4 + (_creationStartTime.TimeSince * 0.25), 0.3 + (_creationProgressTime.TimeSince * 0.5)), options.MinimumParryWindow.Value);
 
             double creationDist = _creationProgressParryabilityDist;
 
@@ -552,8 +559,23 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             byte boostByte = (byte)(playerBoostByte ^ enemyBoostByte);
 
-            //MelonLogger.Msg($"TEST PRINT FOR ProjectileBoostTracker.GetHashCode\nplayerBoostByte:{Convert.ToString(playerBoostByte, toBase: 2)}\nenemyBoostByte:{Convert.ToString(enemyBoostByte, toBase: 2)}\nboostByte:{Convert.ToString(boostByte, toBase: 2)}");
-            return BitConverter.ToInt32(new byte[] { boostByte, (byte)ProjectileType, (byte)TimesRicocheted, 0}, 0);
+            byte flagsByte = 0;
+            if (Options.DifferentiateElectricity.Value)
+            {
+                if (Electric)
+                {
+                    flagsByte ^= 0b10000000;
+                }
+            }
+
+            int countedCoinRicos = 0;
+
+            if (Options.DifferentiateCoinRicochets.Value)
+            {
+                countedCoinRicos = CoinRicochets / Options.CoinRicochetDivisor.Value;
+            }
+
+            return BitConverter.ToInt32(new byte[] { boostByte, (byte)ProjectileType, (byte)(TimesRicocheted + countedCoinRicos), flagsByte}, 0);
         }
 
         public void CopyFrom(ProjectileBoostTracker other)
@@ -567,6 +589,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             _creationStartTime = other._creationStartTime;
             _startingRicoAmount = other._startingRicoAmount;
             Electric = other.Electric;
+            CustomMesh = other.CustomMesh;
+            CustomMaterial = other.CustomMaterial;
+            CoinRicochets = other.CoinRicochets;
 
             if (other._explosiveAndExplosionUnique)
             {

@@ -62,7 +62,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return;
             }
 
-            if (!Options.GrenadesParryable.Value)
+            var options = Options.GrenadesOptions;
+
+            if (!options.CanBeParried.Value)
             {
                 return;
             }
