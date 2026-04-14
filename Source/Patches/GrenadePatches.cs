@@ -116,7 +116,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 if (grenade.playerRiding)
                 {
-                    StyleHUD.Instance.AddPoints(300, "<color=#ff0000>NOW PARRY US");
+                    StyleHUD.Instance.AddPoints(750, "<color=#ff0000>NOW PARRY US");
                 }
             };
 
