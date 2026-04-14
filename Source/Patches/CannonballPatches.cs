@@ -44,11 +44,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             if (boostTracker.LastBoostedByPlayer)
             {
-                StyleHUD.Instance.AddPoints(100, "<color=#ffab02>PARRY THIS");
+                StyleHUD.Instance.AddPoints(100, "<color=#ffab02>PARRY THIS</color>");
             }
             else
             {
-                StyleHUD.Instance.AddPoints(50, "<color=#02ff17>HOLD THIS FOR ME");
+                StyleHUD.Instance.AddPoints(50, "<color=#02ff17>HOLD THIS FOR ME</color>");
             }
 
         }

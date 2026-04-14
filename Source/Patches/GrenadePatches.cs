@@ -43,11 +43,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             if (boostTracker.LastBoostedByPlayer)
             {
-                StyleHUD.Instance.AddPoints(150, "<color=#ba42ff>IDK HOW YOU DID THAT");
+                StyleHUD.Instance.AddPoints(150, "<color=#ba42ff>IDK HOW YOU DID THAT</color>");
             }
             else
             {
-                StyleHUD.Instance.AddPoints(60, "<color=#d883ff>HIGHLY VOLATILE");
+                StyleHUD.Instance.AddPoints(60, "<color=#d883ff>HIGHLY VOLATILE</color>");
             }
         }
 
@@ -71,7 +71,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 if (grenade.rocket)
                 {
-                    StyleHUD.Instance.AddPoints(500, "<color=#ae57ff>MODERN <color=#ff0000>T<color=#ffaa00>E<color=#0dff00>C<color=#ffd500>H<color=#7bff00>N<color=#00ff59>O<color=#00c3ff>L<color=#0080ff>O<color=#7300ff>G<color=#ff00ee>Y");
+                    StyleHUD.Instance.AddPoints(500, "<color=#ae57ff>MODERN <color=#ff0000>T<color=#ffaa00>E<color=#0dff00>C<color=#ffd500>H<color=#7bff00>N<color=#00ff59>O<color=#00c3ff>L<color=#0080ff>O<color=#7300ff>G<color=#ff00ee>Y</color>");
                 }
                 else
                 {
