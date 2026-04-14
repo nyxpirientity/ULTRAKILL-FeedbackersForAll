@@ -47,7 +47,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
             else
             {
-                StyleHUD.Instance.AddPoints(60, "<color=#ba42ff>HIGHLY VOLATILE");
+                StyleHUD.Instance.AddPoints(60, "<color=#d883ff>HIGHLY VOLATILE");
             }
         }
 
@@ -107,6 +107,19 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             var parryability = boostTracker.NotifyContact();
 
+            Action failedParry = () =>
+            {
+                if (boostTracker.NumEnemyBoosts == 0)
+                {
+                    return;
+                }
+
+                if (grenade.playerRiding)
+                {
+                    StyleHUD.Instance.AddPoints(300, "<color=#ff0000>NOW PARRY US");
+                }
+            };
+
             if (other.TryGetComponent<PortalAwarePlayerColliderClone>(out var _) || grenade.IsExploded() || (!grenade.enemy && other.CompareTag("Player")) || other.gameObject.layer == 14 || other.gameObject.layer == 20)
             {
                 return;
@@ -130,18 +143,27 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 var feedbacker = enemy.GetFeedbacker();
 
+
                 if (!feedbacker.Enabled)
                 {
                     return;
                 }
 
+                if (grenade.playerRiding)
+                {
+                    failedParry();
+                    return;
+                }
+
                 if (!feedbacker.ReadyToParry)
                 {
+                    failedParry();
                     return;
                 }
                 
                 if (!feedbacker.CanParry(boostTracker, parryability))
                 {
+                    failedParry();
                     return;
                 }
                 

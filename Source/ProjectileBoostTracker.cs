@@ -472,6 +472,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         protected void FixedUpdate()
         {
+            if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
             if (_safeEnemyTypeCountDown >= 0.0)
             {
                 _safeEnemyTypeCountDown -= Time.fixedDeltaTime;
@@ -486,11 +491,24 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 }
             }
 
+            if (_grenade != null && NumEnemyBoosts >= 1)
+            {
+                if (_grenade.playerRiding)
+                {
+                    IgnoreColliders = null;
+                }
+            }
+
             MaybeEnforceOurExplosionPrefab();
         }
 
         private void MaybeEnforceOurExplosionPrefab()
         {
+            if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
             if (_explosiveAndExplosionUnique)
             {
                 if (_proj != null)
@@ -595,7 +613,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             CustomMaterial = other.CustomMaterial;
             CoinRicochets = other.CoinRicochets;
 
-            if (other._explosiveAndExplosionUnique)
+            if (other._explosiveAndExplosionUnique && NyxLib.Cheats.Enabled)
             {
                 _prefabHolder = new GameObject();
                 _prefabHolder.transform.parent = transform;
@@ -606,7 +624,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             var proj = GetComponent<Projectile>();
 
-            if (other._proj != null && proj != null)
+            if (other._proj != null && proj != null && NyxLib.Cheats.Enabled)
             {
                 var explosion = other._proj.explosionEffect.GetComponentInChildren<Explosion>();
                 
@@ -618,7 +636,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             var revolverBeam = other.GetComponent<RevolverBeam>();
 
-            if (revolverBeam != null && proj != null)
+            if (revolverBeam != null && proj != null && NyxLib.Cheats.Enabled)
             {
                 var explosion = revolverBeam.hitParticle.GetComponentInChildren<Explosion>();
                 
@@ -636,6 +654,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         internal void SetTempSafeEnemyType(EnemyType enemyType)
         {
+            if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
             if (_proj == null)
             {
                 return;
@@ -652,6 +675,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         private void MakeExplosiveAndExplosionUnique()
         {
+            if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
             if (_explosiveAndExplosionUnique)
             {
                 return;
