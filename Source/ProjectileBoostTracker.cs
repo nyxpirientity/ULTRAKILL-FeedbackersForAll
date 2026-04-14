@@ -56,6 +56,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             get => _ignoreColliders;
             set
             {
+                if (!NyxLib.Cheats.Enabled)
+                {
+                    return;
+                }
+                
                 foreach (var otherCol in _ignoreColliders)
                 {
                     if (otherCol == null)
