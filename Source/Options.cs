@@ -89,21 +89,21 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 Action fodderParryStats = () =>
                 {
-                    defaultFirstHitSkill = 0.5;
+                    defaultFirstHitSkill = 0.4;
                     defaultMultiHitSkill = 0.25;
                     
                     defaultStaminaCost = 0.5;
-                    defaultStaminaRechargeRate = 0.125;
+                    defaultStaminaRechargeRate = 0.2;
                     defaultMinParryCooldown = 0.1;
                 };
 
                 Action miniBossParryStats = () =>
                 {
-                    defaultFirstHitSkill = 0.5;
+                    defaultFirstHitSkill = 0.65;
                     defaultMultiHitSkill = 0.5;
                     
                     defaultStaminaCost = 0.425;
-                    defaultStaminaRechargeRate = 0.15;
+                    defaultStaminaRechargeRate = 0.25;
                     defaultMinParryCooldown = 0.1;
                 };
 
@@ -140,10 +140,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         defaultStaminaRechargeRate = 0.2f;
                         break;
                     case EnemyType.BigJohnator:
+                        miniBossParryStats();
                         break;
                     case EnemyType.Centaur:
+                        miniBossParryStats();
                         break;
                     case EnemyType.Cerberus:
+                        miniBossParryStats();
                         break;
                     case EnemyType.Deathcatcher:
                         break;
@@ -174,6 +177,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         miniBossParryStats();
                         break;
                     case EnemyType.HideousMass:
+                        miniBossParryStats();
                         break;
                     case EnemyType.Idol:
                         break;
