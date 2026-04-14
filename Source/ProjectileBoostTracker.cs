@@ -91,6 +91,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
         }
 
+        public bool CannonballExplodingForPlayer = false;
+
         public Material CustomMaterial = null;
         public Mesh CustomMesh = null;
 

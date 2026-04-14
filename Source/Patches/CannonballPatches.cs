@@ -13,18 +13,64 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             CannonballEvents.PreCannonballStart += PreCannonballStart;
             CannonballEvents.PreCannonballCollide += PreCannonballCollide;
             CannonballEvents.PreCannonballLaunch += PreCannonballLaunch;
+            CannonballEvents.PreCannonballExplode += PreCannonballExplode;
         }
-        
+
         private static readonly FieldInfo _checkingForBreakFi = AccessTools.Field(typeof(Cannonball), "checkingForBreak");
+
+        private static void PreCannonballExplode(EventMethodCanceler canceler, Cannonball cannonball)
+        {
+            var boostTracker = cannonball.GetComponent<ProjectileBoostTracker>();
+            
+            if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
+            if (boostTracker == null)
+            {
+                return;
+            }
+
+            if (boostTracker.CannonballExplodingForPlayer)
+            {
+                return;
+            }
+
+            if (boostTracker.NumEnemyBoosts == 0)
+            {
+                return;
+            }
+
+            if (boostTracker.LastBoostedByPlayer)
+            {
+                StyleHUD.Instance.AddPoints(100, "<color=#ffab02>PARRY THIS");
+            }
+            else
+            {
+                StyleHUD.Instance.AddPoints(50, "<color=#02ff17>HOLD THIS FOR ME");
+            }
+
+        }
 
         private static void PreCannonballLaunch(EventMethodCanceler canceler, Cannonball cannonball)
         {
+            if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
             Log.Debug($"PreCannonballLaunch called on {cannonball}");
             cannonball.GetComponent<ProjectileBoostTracker>().IncrementPlayerBoosts();
         }
 
         private static void PreCannonballCollide(EventMethodCanceler canceler, Cannonball cannonball, Collider other)
         {
+            if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
             Log.Debug($"PreCannonballCollide called on {cannonball}");
             Collider col = cannonball.GetComponent<Collider>();
             var boostTracker = cannonball.GetComponent<ProjectileBoostTracker>();
@@ -46,6 +92,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             if (other.TryGetComponent<NewMovement>(out var _) && !boostTracker.LastBoostedByPlayer && boostTracker.HasBeenBoosted)
             {
+                boostTracker.CannonballExplodingForPlayer = true;
                 cannonball.Explode();
                 return;
             }

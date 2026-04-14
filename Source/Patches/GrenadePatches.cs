@@ -14,7 +14,41 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             GrenadeEvents.PreGrenadeBeam += PreGrenadeBeam;
             GrenadeEvents.PostGrenadeBeam += PostGrenadeBeam;
             GrenadeEvents.PreGrenadeCollision += PreGrenadeCollision;
+            GrenadeEvents.PreGrenadeExplode += PreGrenadeExplode;
+        }
 
+        private static void PreGrenadeExplode(EventMethodCanceler canceler, Grenade grenade, bool big, bool harmless, bool super, float sizeMultiplier, bool ultrabooster, GameObject exploderWeapon, bool fup)
+        {
+            if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
+            if (exploderWeapon == null)
+            {
+                return;
+            }
+
+            var boostTracker = grenade.GetComponent<ProjectileBoostTracker>();
+
+            if (boostTracker == null)
+            {
+                return;
+            }
+
+            if (boostTracker.NumEnemyBoosts <= 0)
+            {
+                return;
+            }
+
+            if (boostTracker.LastBoostedByPlayer)
+            {
+                StyleHUD.Instance.AddPoints(150, "<color=#ba42ff>IDK HOW YOU DID THAT");
+            }
+            else
+            {
+                StyleHUD.Instance.AddPoints(60, "<color=#ba42ff>HIGHLY VOLATILE");
+            }
         }
 
         private static FieldInfo grenadeBeamFi = typeof(Grenade).GetField("grenadeBeam", BindingFlags.NonPublic | BindingFlags.Instance);
