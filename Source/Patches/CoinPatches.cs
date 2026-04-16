@@ -73,7 +73,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 boostTracker.CoinRicochets += coin.ricochets + 1;
 
                 var altBeam = (GameObject)altBeamFi.GetValue(coin);
-                var altRevBeam = altBeam.GetComponentInChildren<RevolverBeam>();
+                var altRevBeam = altBeam?.GetComponentInChildren<RevolverBeam>();
                 if (altBeam != null && altRevBeam != null)
                 {
                     if (altRevBeam.attributes.Contains(HitterAttribute.Electricity))
