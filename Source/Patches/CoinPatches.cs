@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -69,7 +70,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 var coin = _currentCoin;
 
                 var boostTracker = coin.GetComponent<ProjectileBoostTracker>();
-
+                
                 boostTracker.CoinRicochets += coin.ricochets + 1;
 
                 var altBeam = (GameObject)altBeamFi.GetValue(coin);
@@ -168,14 +169,53 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             public static void Prefix(Coin __instance)
             {
                 _currentCoin = __instance;
-                
+                var coinBoostTracker = __instance.GetComponent<ProjectileBoostTracker>();
+
+                var coinMf = __instance.GetComponentInChildren<MeshFilter>();
+                var coinMr = __instance.GetComponentInChildren<MeshRenderer>();
+
                 FieldInfo altBeamFI = typeof(Coin).GetField("altBeam", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo pendingBeamHitsFI = typeof(Coin).GetField("pendingBeamHits", BindingFlags.NonPublic | BindingFlags.Instance);
                 
                 var altBeam = altBeamFI.GetValue(__instance) as GameObject;
+                var pendingBeamHits = pendingBeamHitsFI.GetValue(__instance) as IEnumerable;
+
+                foreach (var item in pendingBeamHits)
+                {                    
+                    if (item == null)
+                    {
+                        Log.Warning($"Unexpected null item for coin {__instance} (boostTracker: {coinBoostTracker})");
+                    }
+
+                    var pendingAltBeamFi = item.GetType().GetField("altBeam", BindingFlags.Instance | BindingFlags.Public);
+                    
+                    if (pendingAltBeamFi == null)
+                    {
+                        Log.Warning($"Unexpected null pendingAltBeamFi for coin {__instance} (boostTracker: {coinBoostTracker})");
+                    }
+
+                    Assert.IsNotNull(pendingAltBeamFi);
+                    Assert.IsNotNull(item);
+
+                    var pendingAltBeam = pendingAltBeamFi.GetValue(item) as GameObject;
+
+                    if (pendingAltBeam == null)
+                    {
+                        continue;
+                    }
+
+                    var pendingBoostTracker = pendingAltBeam?.GetOrAddComponent<ProjectileBoostTracker>();
+                    pendingBoostTracker.CopyFrom(coinBoostTracker);
+                    pendingBoostTracker.CustomMesh = coinMf?.mesh;
+                    pendingBoostTracker.CustomMaterial = coinMr?.material;
+                }
 
                 if (altBeam != null)
                 {
-                    altBeam.GetComponent<ProjectileBoostTracker>().CopyFrom(__instance.GetComponent<ProjectileBoostTracker>());
+                    var altBeamBoostTracker = altBeam.GetOrAddComponent<ProjectileBoostTracker>();
+                    altBeamBoostTracker.CopyFrom(coinBoostTracker);
+                    altBeamBoostTracker.CustomMesh = coinMf?.mesh;
+                    altBeamBoostTracker.CustomMaterial = coinMr?.material;
                 }
             }
 

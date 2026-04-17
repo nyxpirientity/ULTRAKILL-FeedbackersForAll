@@ -772,7 +772,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             printStr += $"\ntimeSinceCreationProgress: {_creationProgressTime.TimeSince}";
             printStr += $"\ncreationProgressTimestamp: {_creationProgressTime.TimeStamp}";
 
-            Log.Debug(printStr);
+            Log.Message(printStr);
         }
 
         [SerializeField] private uint _numPlayerBoosts = 0;

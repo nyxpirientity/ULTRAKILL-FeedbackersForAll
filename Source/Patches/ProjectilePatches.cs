@@ -67,6 +67,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     StyleHUD.Instance.AddPoints(600, "<color=#c165ff>I INSIST</color>");
                 }
+
+                boostTracker.DebugPrintInfo("failedProjParry");
             };
 
             EnemyIdentifierIdentifier eidid = null;
