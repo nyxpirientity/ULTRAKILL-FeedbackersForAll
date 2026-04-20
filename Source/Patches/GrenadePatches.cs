@@ -174,6 +174,11 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 
                 feedbacker.QueueParry(grenade.rb.transform.position, (offset) =>
                 {
+                    if (grenade == null)
+                    {
+                        return; // todo: to preven the parry flash warning leading to nothing, maybe this should be available as a sort of validate parry validity action param
+                    }
+
                     grenade.gameObject.SetActive(true);
                     feedbacker.ParryFinishEffect(grenade.transform.position  + offset);
                     Vector3 parryForce;
