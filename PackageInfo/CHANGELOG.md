@@ -1,0 +1,9 @@
+- Update for newer NyxLib version
+- Update/recompile for new ULTRAKILL version
+- adjust balance (quite a lot)
+- fix some issues with parryability calculation not working as intended
+- added a lot more configurability
+- added more style bonuses for counter-parries
+- made counter-parry style bonuses grant more style
+- buffed the heck out of many counter-parries
+- improve consistency of parried coin-based attacks showing as a coin flying towards V1's face
