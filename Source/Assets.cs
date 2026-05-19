@@ -13,11 +13,6 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         internal static void Initialize()
         {
-            LevelQuickLoader.AddQuickLoadLevel("uk_construct");
-
-            NyxLib.Assets.EnableExplosionsPicking();
-            NyxLib.Assets.EnableProjectilePicking();
-
             NyxLib.Assets.AddAssetPicker<SwordsMachine>((sm) =>
             {
                 ParryFlashPrefab = sm.gunFlash;

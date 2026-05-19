@@ -13,16 +13,116 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         internal static void Initialize()
         {
             NailEvents.PreNailStart += PreNailStart;
+            NailEvents.PreNailTouchEnemy += PreNailTouchEnemy;
             NailEvents.PreNailHitEnemy += PreNailHitEnemy;
         }
-        
+
         static FieldInfo sameEnemyHitCooldownFi = AccessTools.Field(typeof(Nail), "sameEnemyHitCooldown");
         static FieldInfo currentHitEnemyFi =AccessTools.Field(typeof(Nail), "currentHitEnemy");
         static FieldInfo hitLimbsFi = AccessTools.Field(typeof(Nail), "hitLimbs");
+        static FieldAccess<Nail, EnemyIdentifier> currentHitEnemyFA = new FieldAccess<Nail, EnemyIdentifier>("currentHitEnemy");
 
         private static void PreNailStart(EventMethodCanceler canceler, Nail nail)
         {
             nail.GetOrAddComponent<ProjectileBoostTracker>();
+        }
+
+        private static void PreNailTouchEnemy(EventMethodCanceler canceler, Nail nail, Transform other)
+        {
+            if (nail.chainsaw && nail.sawblade)
+            {
+                var options = Options.SawsOptions;
+
+                if (!options.CanBeParried.Value)
+                {
+                    return;
+                }
+
+                if (!other.TryGetComponent<EnemyIdentifierIdentifier>(out var eidid) || !eidid.eid)
+                {
+                    return;
+                }
+
+                var enemy = eidid.eid.GetComponent<EnemyComponents>();
+            
+                Assert.IsNotNull(enemy);
+
+                if (enemy.Eid.Dead)
+                {
+                    return;
+                }                
+
+                var feedbacker = enemy.GetFeedbacker();
+
+                if (!feedbacker.Enabled)
+                {
+                    return;
+                }
+
+                var boostTracker = nail.GetComponent<ProjectileBoostTracker>();
+
+                if (boostTracker == null)
+                {
+                    return;
+                }
+
+                if (boostTracker.SafeEid == enemy.Eid)
+                {
+                    canceler.CancelMethod();
+                    return;
+                }
+
+                if (nail.stopped)
+                {
+                    return;
+                }
+
+                var parryability = boostTracker.NotifyContact();
+                boostTracker.MarkCannotBeEnemyParried();
+
+                if (!feedbacker.ReadyToParry)
+                {
+                    return;
+                }
+
+                if (!feedbacker.CanParry(boostTracker, parryability))
+                {
+                    return;
+                }
+
+                boostTracker.IncrementEnemyBoost();
+                feedbacker.ParryEffect(nail.transform.position);
+                nail.gameObject.SetActive(false);
+                feedbacker.QueueParry(nail.transform.position, (position) =>
+                {
+                    nail.transform.position += position;
+                    var parryForce = feedbacker.SolveParryForce(nail.transform.position, nail.rb.velocity);
+                
+                    nail.rb.velocity = parryForce * nail.rb.velocity.magnitude;
+                    nail.rb.transform.rotation = Quaternion.LookRotation(parryForce);
+                    boostTracker.IgnoreColliders = enemy.Colliders;
+                    boostTracker.SafeEid = enemy.Eid;
+                    nail.punched = false;
+                    nail.punchedTimer = 0.0f;
+                    nail.punchable = true;
+                    currentHitEnemyFA.SetValue(nail, null);
+                    nail.originalVelocity = nail.rb.velocity;
+                    sameEnemyHitCooldownFi.SetValue(nail, 0.0f);
+                    nail.stopped = false;
+
+                    var v1 = NewMovement.Instance;
+                    
+                    foreach (var col in boostTracker.Colliders)
+                    {
+                        Physics.IgnoreCollision(col, v1.playerCollider, false);
+                    }
+                    nail.gameObject.SetActive(true);
+                });
+
+
+                canceler.CancelMethod();
+                return;
+            }
         }
 
         private static void PreNailHitEnemy(EventMethodCanceler canceler, Nail nail, Transform other, EnemyIdentifierIdentifier eidid)
@@ -108,8 +208,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             boostTracker.IgnoreColliders = enemy.Colliders;
             boostTracker.SafeEid = enemy.Eid;
-            nail.enemy = true;
-            nail.gameObject.layer = 2;
+
+            nail.punched = false;
+            nail.punchedTimer = 0.0f;
+            nail.punchable = true;
 
             var v1 = NewMovement.Instance;
             

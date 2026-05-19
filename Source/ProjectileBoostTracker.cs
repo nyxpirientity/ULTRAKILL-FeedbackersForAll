@@ -136,6 +136,16 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     _creationProgressParryabilityDist = _startParryabilityDist;
                 }
             }
+            else if (_nail != null)
+            {
+                if (NumBoosts == 1 && !_proj.friendly)
+                {
+                    _creationStartTime.UpdateToNow();
+                    DebugPrintCreationStartTime();
+                    _startParryabilityDist = ParryabilityTracker.NotifyCreationStart(GetHashCode());
+                    _creationProgressParryabilityDist = _startParryabilityDist;
+                }
+            }
 
             IgnoreColliders = new Collider[]{};
             

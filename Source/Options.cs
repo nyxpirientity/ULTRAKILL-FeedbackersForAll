@@ -61,7 +61,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             PlayerProjectilesOptions = new ProjectileTypeOptions("PlayerProjectiles", true, 0.75f);
             EnemyProjectilesOptions = new ProjectileTypeOptions("EnemyProjectiles", true, 0.75f);
             CannonballsOptions = new ProjectileTypeOptions("Cannonballs", true, 0.75f);
-            SawsOptions = new ProjectileTypeOptions("Saws", true, 0.75f);
+            SawsOptions = new ProjectileTypeOptions("Saws", true, 1.5f);
 
             FirstHitSkillScalar = Config.Bind($"Balance", "FirstHitSkillScalar", 1.0f);
             MultiHitSkillScalar = Config.Bind($"Balance", "MultiHitSkillScalar", 1.0f);
@@ -78,7 +78,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             LogDebugInfo = Config.Bind("Diagnostics", "LogDebug", false);
              
-            foreach (var enumVal in Enum.GetValues(typeof(EnemyType)))
+            foreach (var enumVal in Enum.GetValues(typeof(global::EnemyType)))
             {
                 double defaultFirstHitSkill = 0.75;
                 double defaultMultiHitSkill = 0.5;

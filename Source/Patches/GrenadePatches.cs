@@ -62,10 +62,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         {
             var grenadeBeamPrefab = (RevolverBeam)(grenadeBeamFi.GetValue(grenade));
             var boostTracker = grenadeBeamPrefab.gameObject.AddComponent<ProjectileBoostTracker>();
-            var oldBoostTracker = grenade.GetComponent<ProjectileBoostTracker>();
             Assert.IsNotNull(boostTracker);
             Assert.IsNotNull(grenade);
             Assert.IsNotNull(grenade.GetComponent<ProjectileBoostTracker>());
+            var oldBoostTracker = grenade.GetComponent<ProjectileBoostTracker>();
 
             if (oldBoostTracker.NumEnemyBoosts > 0)
             {

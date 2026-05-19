@@ -156,6 +156,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         {
         }
 
+
         protected void FixedUpdate()
         {
             Stamina = Mathf.MoveTowards(Stamina, 1.0f, (Time.fixedDeltaTime * (float)Options.ParryStaminaRechargeRate[_enemyType].Value * Options.StaminaRechargeRateScalar.Value));
