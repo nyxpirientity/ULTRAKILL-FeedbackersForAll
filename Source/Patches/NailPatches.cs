@@ -18,7 +18,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         }
 
         static FieldInfo sameEnemyHitCooldownFi = AccessTools.Field(typeof(Nail), "sameEnemyHitCooldown");
-        static FieldInfo currentHitEnemyFi =AccessTools.Field(typeof(Nail), "currentHitEnemy");
+        static FieldInfo currentHitEnemyFi = AccessTools.Field(typeof(Nail), "currentHitEnemy");
         static FieldInfo hitLimbsFi = AccessTools.Field(typeof(Nail), "hitLimbs");
         static FieldAccess<Nail, EnemyIdentifier> currentHitEnemyFA = new FieldAccess<Nail, EnemyIdentifier>("currentHitEnemy");
 
@@ -44,13 +44,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 }
 
                 var enemy = eidid.eid.GetComponent<EnemyComponents>();
-            
+
                 Assert.IsNotNull(enemy);
 
                 if (enemy.Eid.Dead)
                 {
                     return;
-                }                
+                }
 
                 var feedbacker = enemy.GetFeedbacker();
 
@@ -90,14 +90,17 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     return;
                 }
 
+                // chainsaw parry
+
                 boostTracker.IncrementEnemyBoost();
                 feedbacker.ParryEffect(nail.transform.position);
                 nail.gameObject.SetActive(false);
-                feedbacker.QueueParry(nail.transform.position, (position) =>
+                feedbacker.QueueParry(nail.transform.position, (positionOffset) =>
                 {
-                    nail.transform.position += position;
+                    nail.transform.position += positionOffset;
                     var parryForce = feedbacker.SolveParryForce(nail.transform.position, nail.rb.velocity);
-                
+                    var csAdds = nail.GetOrAddComponent<SawAdditions>();
+                    csAdds.HurtPlayer = true;
                     nail.rb.velocity = parryForce * nail.rb.velocity.magnitude;
                     nail.rb.transform.rotation = Quaternion.LookRotation(parryForce);
                     boostTracker.IgnoreColliders = enemy.Colliders;
@@ -111,7 +114,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     nail.stopped = false;
 
                     var v1 = NewMovement.Instance;
-                    
+
                     foreach (var col in boostTracker.Colliders)
                     {
                         Physics.IgnoreCollision(col, v1.playerCollider, false);
@@ -136,7 +139,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 return;
             }
-            
+
             var sameEnemyHitCooldown = (float)sameEnemyHitCooldownFi.GetValue(nail);
             var currentHitEnemy = (EnemyIdentifier)currentHitEnemyFi.GetValue(nail);
             var hitLimbs = (List<Transform>)hitLimbsFi.GetValue(nail);
@@ -150,7 +153,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             Assert.IsNotNull(eidid.eid);
 
             var enemy = eidid.eid.GetComponent<EnemyComponents>();
-            
+
             Assert.IsNotNull(enemy);
 
             var options = Options.SawsOptions;
@@ -163,7 +166,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             if (enemy.Eid.Dead)
             {
                 return;
-            }                
+            }
 
             var feedbacker = enemy.GetFeedbacker();
 
@@ -198,27 +201,36 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 return;
             }
 
-            var parryForce = feedbacker.SolveParryForce(nail.transform.position, nail.rb.velocity);
-            
-            nail.rb.velocity = parryForce * nail.rb.velocity.magnitude;
-            nail.rb.transform.rotation = Quaternion.LookRotation(parryForce);
-
-            boostTracker.IncrementEnemyBoost();
             feedbacker.ParryEffect(nail.transform.position);
-
-            boostTracker.IgnoreColliders = enemy.Colliders;
-            boostTracker.SafeEid = enemy.Eid;
-
-            nail.punched = false;
-            nail.punchedTimer = 0.0f;
-            nail.punchable = true;
-
-            var v1 = NewMovement.Instance;
-            
-            foreach (var col in boostTracker.Colliders)
+            boostTracker.IncrementEnemyBoost();
+            nail.gameObject.SetActive(false);
+            feedbacker.QueueParry(nail.transform.position, (positionOffset) =>
             {
-                Physics.IgnoreCollision(col, v1.playerCollider, false);
-            }
+                nail.gameObject.SetActive(true);
+                nail.transform.position += positionOffset;
+                var sawAdd = nail.GetOrAddComponent<SawAdditions>();
+                var parryForce = feedbacker.SolveParryForce(nail.transform.position, nail.rb.velocity);
+
+                nail.rb.velocity = parryForce * nail.rb.velocity.magnitude;
+                nail.rb.transform.rotation = Quaternion.LookRotation(parryForce);
+
+                boostTracker.IgnoreColliders = enemy.Colliders;
+                boostTracker.SafeEid = enemy.Eid;
+
+                nail.punched = false;
+                nail.punchedTimer = 0.0f;
+                nail.punchable = true;
+                nail.enemy = true;
+                sawAdd.HurtPlayer = true;
+                sawAdd.HurtPlayerDamage = 2;
+
+                var v1 = NewMovement.Instance;
+
+                foreach (var col in boostTracker.Colliders)
+                {
+                    Physics.IgnoreCollision(col, v1.playerCollider, false);
+                }
+            });
 
             canceler.CancelMethod();
             return;
@@ -238,7 +250,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 boostTracker.PreNailFixedUpdate();
             }
-            
+
             public static void Postfix(Nail __instance)
             {
             }

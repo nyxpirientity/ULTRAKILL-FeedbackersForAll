@@ -18,17 +18,17 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         public bool HasBeenBoosted { get => NumPlayerBoosts != 0 || NumEnemyBoosts != 0; }
         public bool LastBoostedByPlayer = false;
         public bool IsPlayerSourced { get => ProjectileType == ProjectileCategory.RevolverBeam || ProjectileType == ProjectileCategory.PlayerProjectile || ProjectileType == ProjectileCategory.Rocket || ProjectileType == ProjectileCategory.Grenade; }
-        
+
         public uint NumPlayerBoosts { get => _numPlayerBoosts; private set => _numPlayerBoosts = value; }
-        
+
         public uint NumEnemyBoosts { get => _numEnemyBoosts; private set => _numEnemyBoosts = value; }
-        
+
         public uint NumBoosts { get => NumPlayerBoosts + NumEnemyBoosts; }
-        
+
         public ProjectileCategory ProjectileType { get => _projectileType; private set => _projectileType = value; }
 
-        public int TimesRicocheted 
-        { 
+        public int TimesRicocheted
+        {
             get
             {
                 if (_revBeam != null)
@@ -60,7 +60,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     return;
                 }
-                
+
                 foreach (var otherCol in _ignoreColliders)
                 {
                     if (otherCol == null)
@@ -73,13 +73,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         Physics.IgnoreCollision(otherCol, col, false);
                     }
                 }
-                
+
                 if (value == null)
                 {
                     _ignoreColliders = new Collider[0];
                     return;
                 }
-                
+
                 _ignoreColliders = value.ToArray();
 
                 foreach (var otherCol in _ignoreColliders)
@@ -107,17 +107,17 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 return;
             }
-            
+
             NumPlayerBoosts += 1;
-            
+
             LastBoostedByPlayer = true;
             _canBeEnemyParried = true;
 
             _creationProgressParryabilityDist = ParryabilityTracker.NotifyCreationProgress(GetHashCode());
             _creationProgressTime.UpdateToNow();
 
-            SafeEid = null;      
-                              
+            SafeEid = null;
+
             if (NumEnemyBoosts == 0)
             {
                 return;
@@ -147,8 +147,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 }
             }
 
-            IgnoreColliders = new Collider[]{};
-            
+            IgnoreColliders = new Collider[] { };
+
             if (NumEnemyBoosts >= 1)
             {
                 BoostOomph(true);
@@ -181,7 +181,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             LastBoostedByPlayer = false;
             _creationProgressParryabilityDist = ParryabilityTracker.NotifyCreationProgress(GetHashCode());
             _creationProgressTime.UpdateToNow();
-            
+
             _canBeEnemyParried = true;
             BoostOomph(false);
             Log.Debug($"IncrementEnemyBoosts called for ProjectileBoostTracker {this}");
@@ -202,7 +202,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             TryCacheComps();
 
             MaybeEnforceOurExplosionPrefab();
-            
+
             if (_proj != null)
             {
                 if (bigOomph)
@@ -211,7 +211,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     MakeExplosiveAndExplosionUnique();
                     _proj.enemyDamageMultiplier *= 2.25f;
                     _proj.damage *= 1.2f;
-                    
+
                     if (Electric)
                     {
                         _proj.explosive = true;
@@ -382,7 +382,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                             ProjectileType = ProjectileCategory.RevolverBeam;
                         }
                     }
-                
+
                     if (Options.DifferentiateRailCannonFromBeams.Value && _revBeam.beamType == BeamType.Railgun)
                     {
                         ProjectileType = ProjectileCategory.RailCannon;
@@ -438,7 +438,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             _hasCachedComps = true;
             var comps = GetComponents<MonoBehaviour>();
-            
+
             _grenade = null;
             _proj = null;
             _revBeam = null;
@@ -508,7 +508,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             if (_grenade != null && NumEnemyBoosts >= 1)
             {
-                if (_grenade.playerRiding)
+                if (_grenade.playerRiding || _grenade.frozen)
                 {
                     IgnoreColliders = null;
                 }
@@ -545,7 +545,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
 
             //Log.Message($"{CoinRicochets}");
-            
+
             TrySolveType();
 
             var contactDiffDist = ParryabilityTracker.NotifyContact(GetHashCode());
@@ -565,16 +565,16 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             if (_startParryabilityDist < _creationProgressParryabilityDist)
             {
                 double startParryabilityDistWeight = 1.0f / (NumBoosts + 1);
-                
+
                 creationDist = ((_startParryabilityDist * startParryabilityDistWeight) + _creationProgressParryabilityDist) / (1.0 + (1.0 * startParryabilityDistWeight));
             }
-            
+
             var diffDist = Math.Min(contactDiffDist, creationDist);
 
             var parryability = Mathf.Clamp01(NyxMath.InverseNormalizeToRange((float)diffDist, (float)window / 2, (float)window));
 
             Log.Debug($"ProjectileBoostTracker.NotifyContact called and is giving a window of {window}, a diffDist of {diffDist} and a contactDiffDist of {contactDiffDist}, and a creationDist of {creationDist} (start: {_startParryabilityDist}, progress: {_creationProgressParryabilityDist}), resulting in a parryability of {parryability} (hash: {GetHashCode()})");
-            
+
             return parryability;
         }
 
@@ -610,7 +610,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 countedCoinRicos = CoinRicochets / Options.CoinRicochetDivisor.Value;
             }
 
-            return BitConverter.ToInt32(new byte[] { boostByte, (byte)ProjectileType, (byte)(TimesRicocheted + countedCoinRicos), flagsByte}, 0);
+            return BitConverter.ToInt32(new byte[] { boostByte, (byte)ProjectileType, (byte)(TimesRicocheted + countedCoinRicos), flagsByte }, 0);
         }
 
         public void CopyFrom(ProjectileBoostTracker other)
@@ -642,7 +642,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             if (other._proj != null && proj != null && NyxLib.Cheats.Enabled)
             {
                 var explosion = other._proj.explosionEffect.GetComponentInChildren<Explosion>();
-                
+
                 if (explosion != null)
                 {
                     proj.explosionEffect = other._proj.explosionEffect;
@@ -654,7 +654,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             if (revolverBeam != null && proj != null && NyxLib.Cheats.Enabled)
             {
                 var explosion = revolverBeam.hitParticle.GetComponentInChildren<Explosion>();
-                
+
                 if (explosion != null)
                 {
                     _prefabHolder ??= new GameObject();

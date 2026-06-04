@@ -47,7 +47,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             }
             else
             {
-                StyleHUD.Instance.AddPoints(60, "<color=#d883ff>HIGHLY VOLATILE</color>");
+                StyleHUD.Instance.AddPoints(600, "<color=#d883ff>HIGHLY VOLATILE</color>");
             }
         }
 
@@ -116,7 +116,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
                 if (grenade.playerRiding)
                 {
-                    StyleHUD.Instance.AddPoints(750, "<color=#ff0000>NOW PARRY US");
+                    StyleHUD.Instance.AddPoints(2500, "<color=#ff0000>NOW PARRY US</color>");
                 }
             };
 
@@ -124,7 +124,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             {
                 return;
             }
-            
+
             if ((other.gameObject.layer == 11 || other.gameObject.layer == 10) && (other.attachedRigidbody ? other.attachedRigidbody.TryGetComponent<EnemyIdentifierIdentifier>(out var eidid) : other.TryGetComponent<EnemyIdentifierIdentifier>(out eidid)) && (bool)eidid.eid)
             {
                 var enemy = eidid.eid.GetComponent<EnemyComponents>();
@@ -160,18 +160,25 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     failedParry();
                     return;
                 }
-                
+
                 if (!feedbacker.CanParry(boostTracker, parryability))
                 {
                     failedParry();
                     return;
                 }
-                
+
+                if (grenade.frozen)
+                {
+                    failedParry();
+                    StyleHUD.Instance.AddPoints(25, "<color=#84d0ff>IMMOVABLE OBJECT</color>");
+                    return;
+                }
+
                 feedbacker.ParryEffect(grenade.transform.position);
                 boostTracker.IncrementEnemyBoost();
-                
+
                 grenade.gameObject.SetActive(false);
-                
+
                 feedbacker.QueueParry(grenade.rb.transform.position, (offset) =>
                 {
                     if (grenade == null)
@@ -180,7 +187,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     }
 
                     grenade.gameObject.SetActive(true);
-                    feedbacker.ParryFinishEffect(grenade.transform.position  + offset);
+                    feedbacker.ParryFinishEffect(grenade.transform.position + offset);
                     Vector3 parryForce;
                     if (grenade.rocket)
                     {
