@@ -2,3 +2,4 @@
 - enemies can now parry unchained-chainsaws
 - improved sawblade parries, and allow player counter-parries of enemy-parried sawblades
 - parried sawblades inflict damage upon the player
+- frozen rockets can no longer be parried by enemies
