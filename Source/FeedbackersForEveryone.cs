@@ -12,7 +12,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         public const string FeedbackersForEveryone = "nyxpiri.feedbackers-for-everyone";
     }
 
-    [BepInPlugin("nyxpiri.ultrakill.feedbackers-for-everyone", "Feedbackers for Everyone", "0.1.0")]
+    [BepInPlugin("nyxpiri.ultrakill.feedbackers-for-everyone", "Feedbackers for Everyone", "0.2.0")]
     [BepInDependency("nyxpiri.ultrakill.nyxlib", BepInDependency.DependencyFlags.HardDependency)]
     [BepInProcess("ULTRAKILL.exe")]
     public class FeedbackersForEveryone : BaseUnityPlugin
@@ -42,17 +42,17 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         }
 
         private void RegisterCheats(CheatsManager cheatsManager)
-        {            
+        {
             cheatsManager.RegisterCheat(new ToggleCheat(
-                "Feedbackers for Everyone!", 
+                "Feedbackers for Everyone!",
                 Cheats.FeedbackersForEveryone,
                 onDisable: (cheat) =>
                 {
-                    
+
                 },
                 onEnable: (cheat, manager) =>
                 {
-                    
+
                 }
             ), "FAIRNESS AND EQUALITY");
         }
