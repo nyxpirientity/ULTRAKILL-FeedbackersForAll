@@ -717,7 +717,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 }
                 else
                 {
-                    _proj.explosionEffect = NyxLib.Assets.Explosions.Normal.Instantiate(_prefabHolder.transform).gameObject;
+                    _proj.explosionEffect = NyxLib.Assets.Explosions.Normal.Instantiate(active: true, _prefabHolder.transform).gameObject;
                     _explosion = _proj.explosionEffect.AddComponent<ExplosionStartModifier>();
                 }
             }
@@ -733,7 +733,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 }
                 else
                 {
-                    _cballInterruptionExplosionFi.SetValue(_cannonball, NyxLib.Assets.Explosions.Normal.Instantiate(_prefabHolder.transform).gameObject);
+                    _cballInterruptionExplosionFi.SetValue(_cannonball, NyxLib.Assets.Explosions.Normal.Instantiate(active: true, _prefabHolder.transform).gameObject);
                     interruptionExplosion = _cballInterruptionExplosionFi.GetValue(_cannonball) as GameObject;
                     _explosion = interruptionExplosion.AddComponent<ExplosionStartModifier>();
                 }
