@@ -11,7 +11,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
     {
         public static void Initialize()
         {
-            ScenesEvents.OnSceneWasLoaded += OnSceneLoad;
+            SceneEvents.OnSceneLoad += OnSceneLoad;
             UpdateEvents.OnFixedUpdate += FixedUpdate;
         }
 
@@ -103,7 +103,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 _contactTimestamps.FixedUpdate();
             }
 
-            internal ParryabilityInfo(string debugName) 
+            internal ParryabilityInfo(string debugName)
             {
                 _debugName = debugName;
                 _creationStartTimestamps = new TimestampsQueue();
@@ -121,8 +121,8 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
             private struct TimestampsQueue
             {
-                public float BestDiffDist 
-                { 
+                public float BestDiffDist
+                {
                     get
                     {
                         if (_bestDiffDistDirty)
@@ -130,13 +130,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                             UpdateBestDiffDist();
                         }
                         return _bestDiffDist;
-                    } 
+                    }
                 }
                 private float _bestDiffDist;
                 public static double MaxDecayTime { get => 20.0; }
 
                 internal bool CanPeek
-                { 
+                {
                     get
                     {
                         return _queue.Count > 0;
@@ -147,7 +147,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 not sure if there's a better way for C# (on this version, newer versions have the feature) but parameterless
                 constructors seems to be unsupported for structs so I'm doing this pattern which is admittedly yuck
                 */
-                internal void Init(string debugName) 
+                internal void Init(string debugName)
                 {
                     _debugName = debugName;
                     _queue = new Queue<FixedTimeStamp>(QueueCap);
@@ -168,7 +168,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     {
                         return;
                     }
-                    
+
                     if (_queue.Count == QueueCap)
                     {
                         _queue.Dequeue();
@@ -198,7 +198,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                         Log.Debug($"{_debugName}:ParryabilityTracker.ParryabilityInfo.TimestampsQueue.UpdateBestDiffDist ended with a BestDiffDist of {BestDiffDist} (based on queue being small)");
                         return;
                     }
-                    
+
                     double? firstDiff = null;
                     double lastDiff = 0.0;
                     double sum = 0.0;
@@ -213,10 +213,10 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                             lastTimestamp = timestamp;
                             continue;
                         }
-                 
+
                         lastDiff = (lastTimestamp.Value.TimeStamp - timestamp.TimeStamp);
 
-                        firstDiff ??= lastDiff;   
+                        firstDiff ??= lastDiff;
 
                         sum += lastDiff;
                         _averageDiffs.Add(sum);
@@ -249,7 +249,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     {
                         return;
                     }
-                    
+
                     if (_decayTimestamp.TimeSince > _decayTime)
                     {
                         Decay();

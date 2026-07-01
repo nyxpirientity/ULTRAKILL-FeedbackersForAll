@@ -29,20 +29,19 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
 
         internal static void Initialize()
         {
-            NyxLib.Assets.AddAssetPicker<SwordsMachine>((sm) =>
+            NyxLib.Assets.AssetPickingManager.AddAssetPicker<SwordsMachine>((sm) =>
             {
                 ParryFlashPrefab = sm.gunFlash;
 
                 return true;
             });
 
-            NyxLib.Assets.AddAssetPicker<EnemyRevolver>((revolver) =>
+            NyxLib.Assets.AssetPickingManager.AddAssetPicker<EnemyRevolver>((revolver) =>
             {
                 if (revolver.bullet.GetComponent<Projectile>() == null)
                 {
                     return false;
                 }
-
 
                 EnemyRevolverBullet = GameObject.Instantiate(revolver.bullet, PrefabHolder.transform);
                 EnemyRevolverBullet.SetActive(false);

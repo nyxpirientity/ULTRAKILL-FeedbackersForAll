@@ -633,7 +633,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 _prefabHolder = new GameObject();
                 _prefabHolder.transform.parent = transform;
                 _prefabHolder.SetActive(false);
-                _explosion = GameObject.Instantiate(_explosion.gameObject, _prefabHolder.transform).GetComponent<ExplosionAdditions>();
+                _explosion = GameObject.Instantiate(_explosion.gameObject, _prefabHolder.transform).GetComponent<ExplosionStartModifier>();
                 _explosiveAndExplosionUnique = true;
             }
 
@@ -661,7 +661,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                     _prefabHolder.SetActive(false);
                     _prefabHolder.transform.parent = transform;
                     proj.explosionEffect = GameObject.Instantiate(revolverBeam.hitParticle, _prefabHolder.transform);
-                    _explosion = proj.explosionEffect.GetOrAddComponent<ExplosionAdditions>();
+                    _explosion = proj.explosionEffect.GetOrAddComponent<ExplosionStartModifier>();
                     _explosiveAndExplosionUnique = true;
                 }
             }
@@ -713,12 +713,12 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 if (explosion != null)
                 {
                     _proj.explosionEffect = GameObject.Instantiate(_proj.explosionEffect, _prefabHolder.transform);
-                    _explosion = _proj.explosionEffect.GetOrAddComponent<ExplosionAdditions>();
+                    _explosion = _proj.explosionEffect.GetOrAddComponent<ExplosionStartModifier>();
                 }
                 else
                 {
-                    _proj.explosionEffect = GameObject.Instantiate(NyxLib.Assets.ExplosionPrefab, _prefabHolder.transform);
-                    _explosion = _proj.explosionEffect.GetComponent<ExplosionAdditions>();
+                    _proj.explosionEffect = NyxLib.Assets.Explosions.Normal.Instantiate(_prefabHolder.transform).gameObject;
+                    _explosion = _proj.explosionEffect.AddComponent<ExplosionStartModifier>();
                 }
             }
             else if (_cannonball != null)
@@ -729,13 +729,13 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 {
                     _cballInterruptionExplosionFi.SetValue(_cannonball, GameObject.Instantiate(interruptionExplosion, _prefabHolder.transform));
                     interruptionExplosion = _cballInterruptionExplosionFi.GetValue(_cannonball) as GameObject;
-                    _explosion = interruptionExplosion.GetOrAddComponent<ExplosionAdditions>();
+                    _explosion = interruptionExplosion.GetOrAddComponent<ExplosionStartModifier>();
                 }
                 else
                 {
-                    _cballInterruptionExplosionFi.SetValue(_cannonball, GameObject.Instantiate(NyxLib.Assets.ExplosionPrefab, _prefabHolder.transform));
+                    _cballInterruptionExplosionFi.SetValue(_cannonball, NyxLib.Assets.Explosions.Normal.Instantiate(_prefabHolder.transform).gameObject);
                     interruptionExplosion = _cballInterruptionExplosionFi.GetValue(_cannonball) as GameObject;
-                    _explosion = interruptionExplosion.GetComponent<ExplosionAdditions>();
+                    _explosion = interruptionExplosion.AddComponent<ExplosionStartModifier>();
                 }
             }
 
@@ -752,7 +752,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             string printStr = $"{name} Debug Info! (because {reason}):";
             if (_proj != null)
             {
-                var expadd = _proj.explosionEffect.GetComponentInChildren<ExplosionAdditions>();
+                var expadd = _proj.explosionEffect.GetComponentInChildren<ExplosionRoot>();
                 printStr += $"\nactive type: projectile";
                 printStr += $"\noverall type: {ProjectileType}";
                 printStr += $"\nprojDamage: {_proj.damage}";
@@ -761,9 +761,9 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
                 printStr += $"\nexplosionBaseDamageOverride: {_explosion?.BaseDamageOverride}";
                 printStr += $"\nexplosionDamageScale: {_explosion?.ExplosionDamageScale}";
                 printStr += $"\nExplosionEnemyDamageMultiplierScale: {_explosion?.ExplosionEnemyDamageMultiplierScale}";
-                printStr += $"\n_explosion is _proj.explosionEffect:[ExplosionAdditionsComp]: {_explosion == expadd}";
+                printStr += $"\n_explosion is _proj.explosionEffect:[ExplosionStartModifierComp]: {_explosion == expadd}";
                 printStr += $"\n_explosion is null: {_explosion is null}";
-                printStr += $"\n_proj.explosionEffect:[ExplosionAdditionsComp] is null: {expadd is null}";
+                printStr += $"\n_proj.explosionEffect:[ExplosionStartModifierComp] is null: {expadd is null}";
             }
             else if (_revBeam != null)
             {
@@ -801,7 +801,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         private Coin _coin = null;
         private double _safeEnemyTypeCountDown = -1.0;
         private bool _explosiveAndExplosionUnique = false;
-        private ExplosionAdditions _explosion = null;
+        private ExplosionStartModifier _explosion = null;
         private GameObject _prefabHolder = null;
         [SerializeField] private bool _canBeEnemyParried = true;
         private Nail _nail;
