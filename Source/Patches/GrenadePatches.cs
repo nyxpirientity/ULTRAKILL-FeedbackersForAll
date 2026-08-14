@@ -14,12 +14,17 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
             GrenadeEvents.PreGrenadeBeam += PreGrenadeBeam;
             GrenadeEvents.PostGrenadeBeam += PostGrenadeBeam;
             GrenadeEvents.PreGrenadeCollision += PreGrenadeCollision;
-            GrenadeEvents.PreGrenadeExplode += PreGrenadeExplode;
+            GrenadeEvents.PostGrenadeExplode += PostGrenadeExplode;
         }
 
-        private static void PreGrenadeExplode(EventMethodCanceler canceler, Grenade grenade, bool big, bool harmless, bool super, float sizeMultiplier, bool ultrabooster, GameObject exploderWeapon, bool fup)
+        private static void PostGrenadeExplode(EventMethodCancelInfo cancelInfo, Grenade grenade, bool big, bool harmless, bool super, float sizeMultiplier, bool ultrabooster, GameObject exploderWeapon, bool fup)
         {
             if (!NyxLib.Cheats.Enabled)
+            {
+                return;
+            }
+
+            if (cancelInfo.Cancelled && cancelInfo.Reason == EventMethodCancelReason.CancelAction)
             {
                 return;
             }
