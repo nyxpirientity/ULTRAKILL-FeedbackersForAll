@@ -12,7 +12,7 @@ namespace Nyxpiri.ULTRAKILL.FeedbackersForEveryone
         public const string FeedbackersForEveryone = "nyxpiri.feedbackers-for-everyone";
     }
 
-    [BepInPlugin("nyxpiri.ultrakill.feedbackers-for-everyone", "Feedbackers for Everyone", "0.2.0")]
+    [BepInPlugin("nyxpiri.ultrakill.feedbackers-for-everyone", "Feedbackers for Everyone", "0.2.1")]
     [BepInDependency("nyxpiri.ultrakill.nyxlib", BepInDependency.DependencyFlags.HardDependency)]
     [BepInProcess("ULTRAKILL.exe")]
     public class FeedbackersForEveryone : BaseUnityPlugin
